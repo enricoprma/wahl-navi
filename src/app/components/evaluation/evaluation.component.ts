@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -17,6 +17,7 @@ import { Vote } from '../../models/vote.model';
 import { ElectionDataService } from '../../services/election-data.service';
 import { MatchingService } from '../../services/matching.service';
 import { PartyService } from '../../services/party.service';
+import { VotingStateService } from '../../services/voting-state.service';
 import { AgreementComponent } from '../agreement/agreement.component';
 import { OverviewComponent } from '../overview/overview.component';
 
@@ -40,12 +41,13 @@ export class EvaluationComponent {
   private readonly dataService = inject(ElectionDataService);
   private readonly partyService = inject(PartyService);
   private readonly matchingService = inject(MatchingService);
+  private readonly votingState = inject(VotingStateService);
   public readonly router = inject(Router);
 
   public parties: Party[] = [];
   public positions: Position[] = [];
   public statements: Statement[] = [];
-  public votes = signal<Vote[]>([]);
+  public readonly votes = this.votingState.votes;
   public agreements: AgreementResult[] = [];
   public location = '';
   public errorMessage = '';
@@ -57,6 +59,7 @@ export class EvaluationComponent {
         this.partyService.getParties(),
         this.dataService.getPositions(),
         this.dataService.getStatements(),
+        this.votingState.initialize(),
       ]);
 
       this.location = metadata.location;
@@ -64,10 +67,6 @@ export class EvaluationComponent {
       this.positions = positions;
       this.statements = statements;
 
-      const storedVotes = localStorage.getItem('votes');
-      if (storedVotes) this.votes.set(JSON.parse(storedVotes));
-
-      this.votes.set(statements.map(statement => this.getVote(statement.id)));
       this.calculateAndSortAgreements();
     } catch {
       this.errorMessage = 'Election data could not be loaded. Please try again later.';
@@ -76,25 +75,13 @@ export class EvaluationComponent {
 
   /** Changes one answer and recalculates agreements. */
   changeVote(statementId: number, value: Opinion | null): void {
-    this.votes.update(votes =>
-      votes.map(vote =>
-        vote.statementId === statementId ? { ...vote, value } : vote,
-      ),
-    );
-    localStorage.setItem('votes', JSON.stringify(this.votes()));
-
+    this.votingState.answer(statementId, value);
     this.calculateAndSortAgreements();
   }
 
   /** Changes one answer's matching weight. */
   changeVoteWeight(statementId: number, weight: 1 | 2): void {
-    this.votes.update(votes =>
-      votes.map(vote =>
-        vote.statementId === statementId ? { ...vote, weight } : vote,
-      ),
-    );
-    localStorage.setItem('votes', JSON.stringify(this.votes()));
-
+    this.votingState.setWeight(statementId, weight);
     this.calculateAndSortAgreements();
   }
 

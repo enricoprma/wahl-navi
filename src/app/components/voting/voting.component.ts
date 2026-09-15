@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,8 +12,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 
 import { Statement } from '../../models/statement.model';
-import { Vote } from '../../models/vote.model';
+import { Opinion } from '../../models/opinion.model';
 import { ElectionDataService } from '../../services/election-data.service';
+import { VotingStateService } from '../../services/voting-state.service';
 import { HelpComponent } from '../dialogs/help/help.component';
 import { StatementExplanationComponent } from '../dialogs/statement-explanation/statement-explanation.component';
 
@@ -35,65 +36,64 @@ import { StatementExplanationComponent } from '../dialogs/statement-explanation/
   styleUrl: './voting.component.sass',
 })
 export class VotingComponent implements OnInit {
-  constructor() {
-    effect(() => {
-      if (this.index()) {
-        localStorage.setItem('index', this.index().toString());
-      }
-      if (this.votes().length) {
-        localStorage.setItem('votes', JSON.stringify(this.votes()));
-      }
-    });
-  }
-
   private readonly router = inject(Router);
   private readonly dataService = inject(ElectionDataService);
+  private readonly votingState = inject(VotingStateService);
   private readonly bottomSheet = inject(MatBottomSheet);
 
   public statements: Statement[] = [];
   public index = signal(0);
-  public votes = signal<Vote[]>([]);
-  public doubleWeightEnabled = signal(false);
+  public readonly votes = this.votingState.votes;
+  public readonly doubleWeightEnabled = computed(() => {
+    const statement = this.statements[this.index()];
+    return statement ? this.votingState.getWeight(statement.id) === 2 : false;
+  });
   public errorMessage = '';
   public dialog = inject(MatDialog);
 
   async ngOnInit(): Promise<void> {
     try {
-      this.statements = await this.dataService.getStatements();
-
-      localStorage.clear();
+      const [statements] = await Promise.all([
+        this.dataService.getStatements(),
+        this.votingState.initialize(),
+      ]);
+      this.statements = statements;
+      const restoredId = this.votingState.currentStatementId();
+      const restoredIndex = restoredId === null
+        ? -1
+        : this.statements.findIndex(statement => statement.id === restoredId);
+      this.index.set(restoredIndex >= 0 ? restoredIndex : 0);
+      if (restoredIndex < 0 && this.statements.length) {
+        this.votingState.setCurrentStatement(this.statements[0].id);
+      }
       window.scrollTo(0, 0);
     } catch {
       this.errorMessage = 'Election data could not be loaded. Please return to the start page and try again.';
     }
   }
 
-  vote(answer: Vote): void {
-    this.doubleWeightEnabled.set(false);
-    const newVotes = this.votes();
-    newVotes[this.index()] = answer;
-    this.votes.set(newVotes);
-    localStorage.setItem('votes', JSON.stringify(this.votes()));
-
-    if (this.index() < this.statements.length - 1) {
-      this.index.update(value => value + 1);
-
-      if (this.votes()[this.index()]) {
-        this.doubleWeightEnabled.set(this.votes()[this.index()].weight === 2);
-      }
-    } else {
+  vote(value: Opinion | null): void {
+    const statement = this.statements[this.index()];
+    if (!statement) return;
+    this.votingState.answer(statement.id, value);
+    if (this.index() === this.statements.length - 1) {
       this.router.navigate(['results']);
+      return;
     }
+    this.setIndex(this.index() + 1);
+  }
+
+  getVote(statementId: number) {
+    return this.votingState.getVote(statementId);
+  }
+
+  isSkipped(statementId: number): boolean {
+    return this.getVote(statementId)?.value === null;
   }
 
   toggleDoubleWeight(): void {
-    this.doubleWeightEnabled.update(value => !value);
-
-    if (this.votes()[this.index()] !== null) {
-      const newVotes = this.votes();
-      newVotes[this.index()].weight = this.doubleWeightEnabled() ? 2 : 1;
-      this.votes.set(newVotes);
-    }
+    const statement = this.statements[this.index()];
+    if (statement) this.votingState.toggleWeight(statement.id);
   }
 
   openInfoDialog(statement: Statement): void {
@@ -103,18 +103,10 @@ export class VotingComponent implements OnInit {
   }
 
   setIndex(index: number): void {
-    if (index < 0) return;
-    if (index > this.statements.length - 1) {
-      this.router.navigate(['results']);
-      return;
-    }
+    if (index < 0 || index >= this.statements.length) return;
 
     this.index.set(index);
-    this.doubleWeightEnabled.set(false);
-
-    if (this.votes()[this.index()]) {
-      this.doubleWeightEnabled.set(this.votes()[this.index()].weight === 2);
-    }
+    this.votingState.setCurrentStatement(this.statements[index].id);
   }
 
   openHelpBottomSheet(): void {

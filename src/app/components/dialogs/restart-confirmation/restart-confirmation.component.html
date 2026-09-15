@@ -1,0 +1,10 @@
+<div class="restart-dialog">
+  <h2 mat-dialog-title>Start over?</h2>
+  <mat-dialog-content>
+    Your saved answers and weights will be removed. This cannot be undone.
+  </mat-dialog-content>
+  <mat-dialog-actions class="restart-actions">
+    <button mat-button (click)="dialogRef.close(false)">Keep my answers</button>
+    <button mat-raised-button color="warn" (click)="dialogRef.close(true)">Start over</button>
+  </mat-dialog-actions>
+</div>

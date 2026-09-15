@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, Input, OnChanges, OnDestroy, OnInit, signal, SimpleChanges } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -28,7 +28,7 @@ import { PartyPositionComponent } from '../dialogs/party-position/party-position
   templateUrl: './agreement.component.html',
   styleUrl: './agreement.component.sass',
 })
-export class AgreementComponent implements OnInit, OnDestroy {
+export class AgreementComponent implements OnInit, OnChanges, OnDestroy {
   private readonly dataService = inject(ElectionDataService);
   private readonly partyService = inject(PartyService);
   private readonly dialog = inject(MatDialog);
@@ -43,6 +43,12 @@ export class AgreementComponent implements OnInit, OnDestroy {
   public animationEnded = signal(false);
   public displayPercent = signal(0);
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['agreement'] && !changes['agreement'].firstChange) {
+      this.animateTo(this.agreement.percent);
+    }
+  }
+
   async ngOnInit(): Promise<void> {
     const [positions, statements] = await Promise.all([
       this.partyService.getPartyPositions(this.agreement.party.id),
@@ -53,7 +59,17 @@ export class AgreementComponent implements OnInit, OnDestroy {
       statements.map(statement => [statement.id, statement]),
     );
 
-    const targetValue = this.agreement.percent;
+    this.animateTo(this.agreement.percent);
+  }
+
+  private animateTo(targetValue: number): void {
+    this.clearAnimationTimer();
+    this.animationEnded.set(false);
+    this.displayPercent.set(0);
+    if (targetValue === 0) {
+      this.animationEnded.set(true);
+      return;
+    }
     const increment = targetValue / 25;
     this.animationTimer = setInterval(() => {
       if (this.displayPercent() < targetValue) {

@@ -40,8 +40,8 @@
       <div class="d-flex flex-column gap-4 align-items-center mb-3">
         <div class="d-flex flex-row justify-content-center gap-4">
           <button
-            [class.was-chosen]="votes()[index()] && votes()[index()].value === 1"
-            (click)="vote({ statementId: statements[index()].id, value: 1, weight: doubleWeightEnabled() ? 2 : 1 })"
+            [class.was-chosen]="getVote(statements[index()].id)?.value === 1"
+            (click)="vote(1)"
             mat-fab
             extended
             class="accept-button"
@@ -50,8 +50,8 @@
             Agree
           </button>
           <button
-            [class.was-chosen]="votes()[index()] && votes()[index()].value === 0"
-            (click)="vote({ statementId: statements[index()].id, value: 0, weight: doubleWeightEnabled() ? 2 : 1 })"
+            [class.was-chosen]="getVote(statements[index()].id)?.value === 0"
+            (click)="vote(0)"
             mat-fab
             extended
             class="neutral-button"
@@ -60,8 +60,8 @@
             Neutral
           </button>
           <button
-            [class.was-chosen]="votes()[index()] && votes()[index()].value === -1"
-            (click)="vote({ statementId: statements[index()].id, value: -1, weight: doubleWeightEnabled() ? 2 : 1 })"
+            [class.was-chosen]="getVote(statements[index()].id)?.value === -1"
+            (click)="vote(-1)"
             mat-fab
             extended
             class="reject-button"
@@ -91,8 +91,8 @@
       <button
         mat-fab
         extended
-        [class.was-chosen]="votes()[index()] && votes()[index()].value === null"
-        (click)="vote({ statementId: statements[index()].id, value: null, weight: doubleWeightEnabled() ? 2 : 1 })"
+        [class.was-chosen]="isSkipped(statements[index()].id)"
+        (click)="vote(null)"
       >
         Skip statement
       </button>

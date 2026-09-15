@@ -1,0 +1,17 @@
+.restart-dialog
+  min-width: min(20rem, 80vw)
+
+.restart-actions
+  display: flex
+  justify-content: center
+  gap: .75rem
+  flex-wrap: wrap
+  padding: 1rem 1.5rem 1.5rem
+
+@media (max-width: 420px)
+  .restart-actions
+    align-items: stretch
+    flex-direction: column
+
+    button
+      width: 100%
