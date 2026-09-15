@@ -8,6 +8,7 @@ import { Party } from '../../models/party.model';
 import { Position } from '../../models/position.model';
 import { Statement } from '../../models/statement.model';
 import { Vote } from '../../models/vote.model';
+import { PartyService } from '../../services/party.service';
 import { PartyPositionComponent } from '../dialogs/party-position/party-position.component';
 
 @Component({
@@ -18,23 +19,30 @@ import { PartyPositionComponent } from '../dialogs/party-position/party-position
 })
 export class OverviewComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
+  private readonly partyService = inject(PartyService);
 
   @Input({ required: true }) statement!: Statement;
   @Input({ required: true }) vote!: Vote;
   @Input({ required: true }) parties!: Party[];
-  @Input({ required: true }) positions!: Position[];
 
   public expanded = false;
+  private positionsByPartyId = new Map<string, Position>();
 
-  ngOnInit(): void {
-    this.shuffle(this.parties);
+  async ngOnInit(): Promise<void> {
+    const positions = await Promise.all(
+      this.parties.map(party =>
+        this.partyService.getPartyPosition(party.id, this.statement.id),
+      ),
+    );
+    this.positionsByPartyId = new Map(
+      positions
+        .filter((position): position is Position => position !== undefined)
+        .map(position => [position.partyId, position]),
+    );
   }
 
-  getPartyPosition(statementId: number, party: Party): Position {
-    return this.positions.filter(
-      position =>
-        position.statementId === statementId && position.partyId === party.id,
-    )[0];
+  getPartyPosition(partyId: string): Position | undefined {
+    return this.positionsByPartyId.get(partyId);
   }
 
   toggleExpanded(): void {
@@ -49,18 +57,5 @@ export class OverviewComponent implements OnInit {
     this.dialog.open(PartyPositionComponent, {
       data: { position, statement, party, vote: this.vote },
     });
-  }
-
-  shuffle(array: unknown[]): void {
-    let currentIndex = array.length;
-
-    while (currentIndex !== 0) {
-      const randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex],
-        array[currentIndex],
-      ];
-    }
   }
 }

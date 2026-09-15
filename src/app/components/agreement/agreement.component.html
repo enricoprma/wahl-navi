@@ -4,7 +4,7 @@
       @if (animationEnded()) {
         <div class="d-flex flex-row gap-1 align-items-center">
           <div class="d-flex flex-row gap-3 align-items-center">
-            <img width="48" [src]="getPartySvgPath(agreement.party)" [alt]="agreement.party.name + ' logo'" />
+            <img width="48" [src]="getPartyLogoPath(agreement.party)" [alt]="agreement.party.name + ' logo'" />
             <h4 class="mb-0 desktop">{{ agreement.party.name }}</h4>
             <h4 class="mb-0 mobile">{{ agreement.party.name }}</h4>
           </div>
@@ -14,8 +14,8 @@
         </div>
       }
       <section class="d-flex flex-row align-items-center justify-content-center gap-5">
-        <mat-progress-bar mode="determinate" [value]="agreement.percent"></mat-progress-bar>
-        <h2>{{ agreement.percent.toFixed(1) }}%</h2>
+        <mat-progress-bar mode="determinate" [value]="displayPercent()"></mat-progress-bar>
+        <h2>{{ displayPercent().toFixed(1) }}%</h2>
       </section>
     </div>
 
@@ -29,34 +29,36 @@
         <div class="d-flex flex-column gap-2">
           <table class="table">
             <tbody>
-              @for (position of getPartyPositions(agreement.party); track position.statementId) {
+              @for (position of positions; track position.statementId) {
+                @if (getStatement(position.statementId); as statement) {
                 <tr>
-                  <td class="small-p m-0 align-middle ps-0 mobile">{{ statements[position.statementId - 1].keywords }}:</td>
-                  <td class="m-0 align-middle ps-0 desktop">{{ statements[position.statementId - 1].keywords }}:</td>
+                  <td class="small-p m-0 align-middle ps-0 mobile">{{ statement.keywords }}:</td>
+                  <td class="m-0 align-middle ps-0 desktop">{{ statement.keywords }}:</td>
                   @switch (position.opinion) {
                     @case (-1) {
                       <td class="d-flex justify-content-end">
-                        <button mat-icon-button aria-label="View disagree position" (click)="openPositionDialog(position, statements[position.statementId - 1], agreement.party)">
-                          <mat-icon [matTooltip]="statements[position.statementId - 1].text" style="color: red">cancel</mat-icon>
+                        <button mat-icon-button aria-label="View disagree position" (click)="openPositionDialog(position, statement, agreement.party)">
+                          <mat-icon [matTooltip]="statement.text" style="color: red">cancel</mat-icon>
                         </button>
                       </td>
                     }
                     @case (0) {
                       <td class="d-flex justify-content-end">
-                        <button mat-icon-button aria-label="View neutral position" (click)="openPositionDialog(position, statements[position.statementId - 1], agreement.party)">
-                          <mat-icon [matTooltip]="statements[position.statementId - 1].text">mode_standby</mat-icon>
+                        <button mat-icon-button aria-label="View neutral position" (click)="openPositionDialog(position, statement, agreement.party)">
+                          <mat-icon [matTooltip]="statement.text">mode_standby</mat-icon>
                         </button>
                       </td>
                     }
                     @case (1) {
                       <td class="d-flex justify-content-end">
-                        <button mat-icon-button aria-label="View agree position" (click)="openPositionDialog(position, statements[position.statementId - 1], agreement.party)">
-                          <mat-icon [matTooltip]="statements[position.statementId - 1].text" style="color: green">check_circle</mat-icon>
+                        <button mat-icon-button aria-label="View agree position" (click)="openPositionDialog(position, statement, agreement.party)">
+                          <mat-icon [matTooltip]="statement.text" style="color: green">check_circle</mat-icon>
                         </button>
                       </td>
                     }
                   }
                 </tr>
+                }
               }
             </tbody>
           </table>

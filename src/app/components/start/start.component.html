@@ -31,6 +31,8 @@
               >
                 Start
               </button>
+            } @else if (errorMessage) {
+              <p class="text-danger mb-0" role="alert">{{ errorMessage }}</p>
             } @else {
               <p class="text-secondary mb-0">Loading election data…</p>
             }

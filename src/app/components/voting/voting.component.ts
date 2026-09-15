@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 
 import { Statement } from '../../models/statement.model';
 import { Vote } from '../../models/vote.model';
-import { YamlDataService } from '../../services/yaml-data.service';
+import { ElectionDataService } from '../../services/election-data.service';
 import { HelpComponent } from '../dialogs/help/help.component';
 import { StatementExplanationComponent } from '../dialogs/statement-explanation/statement-explanation.component';
 
@@ -47,20 +47,25 @@ export class VotingComponent implements OnInit {
   }
 
   private readonly router = inject(Router);
-  private readonly dataService = inject(YamlDataService);
+  private readonly dataService = inject(ElectionDataService);
   private readonly bottomSheet = inject(MatBottomSheet);
 
   public statements: Statement[] = [];
   public index = signal(0);
   public votes = signal<Vote[]>([]);
   public doubleWeightEnabled = signal(false);
+  public errorMessage = '';
   public dialog = inject(MatDialog);
 
   async ngOnInit(): Promise<void> {
-    this.statements = await this.dataService.getStatements();
+    try {
+      this.statements = await this.dataService.getStatements();
 
-    localStorage.clear();
-    window.scrollTo(0, 0);
+      localStorage.clear();
+      window.scrollTo(0, 0);
+    } catch {
+      this.errorMessage = 'Election data could not be loaded. Please return to the start page and try again.';
+    }
   }
 
   vote(answer: Vote): void {

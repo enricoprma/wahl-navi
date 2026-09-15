@@ -5,7 +5,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { Router } from '@angular/router';
 
 import { ElectionMetadata } from '../../models/election-metadata.model';
-import { YamlDataService } from '../../services/yaml-data.service';
+import { ElectionDataService } from '../../services/election-data.service';
 
 @Component({
   selector: 'app-start',
@@ -15,22 +15,27 @@ import { YamlDataService } from '../../services/yaml-data.service';
 })
 export class StartComponent implements OnInit {
   private readonly router = inject(Router);
-  private readonly dataService = inject(YamlDataService);
+  private readonly dataService = inject(ElectionDataService);
 
   public metadata?: ElectionMetadata;
   public numberOfStatements = 0;
   public numberOfParties = 0;
+  public errorMessage = '';
 
   async ngOnInit(): Promise<void> {
-    const [metadata, statements, parties] = await Promise.all([
-      this.dataService.getMetadata(),
-      this.dataService.getStatements(),
-      this.dataService.getParties(),
-    ]);
+    try {
+      const [metadata, statements, parties] = await Promise.all([
+        this.dataService.getMetadata(),
+        this.dataService.getStatements(),
+        this.dataService.getParties(),
+      ]);
 
-    this.metadata = metadata;
-    this.numberOfStatements = statements.length;
-    this.numberOfParties = parties.length;
+      this.metadata = metadata;
+      this.numberOfStatements = statements.length;
+      this.numberOfParties = parties.length;
+    } catch {
+      this.errorMessage = 'Election data could not be loaded. Please try again later.';
+    }
   }
 
   start(): void {

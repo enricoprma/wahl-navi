@@ -1,3 +1,6 @@
+@if (errorMessage) {
+  <div class="my-5" role="alert">{{ errorMessage }}</div>
+} @else {
 <mat-tab-group class="evaluation">
   <mat-tab>
     <ng-template mat-tab-label>
@@ -41,7 +44,7 @@
             <div class="d-flex flex-row align-items-center gap-3">
               <div class="d-flex flex-row gap-1 align-items-center">
                 <p class="mb-0 mobile">Your answer:</p>
-                @switch (votes()[statement.id - 1].value) {
+                @switch (getVote(statement.id).value) {
                   @case (-1) {
                     <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Change answer">
                       <mat-icon style="color: red">cancel</mat-icon>
@@ -65,19 +68,19 @@
                 }
                 <mat-menu #voteMenu="matMenu">
                   <div class="d-flex flex-column align-items-start gap-2 m-2">
-                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id - 1, 1)" (keydown.enter)="changeVote(statement.id - 1, 1); $event.preventDefault()">
+                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id, 1)" (keydown.enter)="changeVote(statement.id, 1); $event.preventDefault()">
                       <mat-icon matTooltip="Agree" style="color: green">check_circle</mat-icon>
                       Agree
                     </div>
-                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id - 1, 0)" (keydown.enter)="changeVote(statement.id - 1, 0); $event.preventDefault()">
+                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id, 0)" (keydown.enter)="changeVote(statement.id, 0); $event.preventDefault()">
                       <mat-icon matTooltip="Neutral">mode_standby</mat-icon>
                       Neutral
                     </div>
-                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id - 1, -1)" (keydown.enter)="changeVote(statement.id - 1, -1); $event.preventDefault()">
+                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id, -1)" (keydown.enter)="changeVote(statement.id, -1); $event.preventDefault()">
                       <mat-icon matTooltip="Disagree" style="color: red">cancel</mat-icon>
                       Disagree
                     </div>
-                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id - 1, null)" (keydown.enter)="changeVote(statement.id - 1, null); $event.preventDefault()">
+                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id, null)" (keydown.enter)="changeVote(statement.id, null); $event.preventDefault()">
                       <mat-icon matTooltip="Skip">radio_button_unchecked</mat-icon>
                       Skip
                     </div>
@@ -88,16 +91,16 @@
               <div class="d-flex flex-row gap-1 align-items-center">
                 <p class="mb-0 mobile">Weight:</p>
                 <button class="d-flex" mat-icon-button [matMenuTriggerFor]="weightMenu" matTooltip="Change weight">
-                  <mat-icon>{{ votes()[statement.id - 1].weight === 2 ? 'speed_2x' : '1x_mobiledata' }}</mat-icon>
+                  <mat-icon>{{ getVote(statement.id).weight === 2 ? 'speed_2x' : '1x_mobiledata' }}</mat-icon>
                 </button>
               </div>
               <mat-menu #weightMenu="matMenu">
                 <div class="d-flex flex-column align-items-start gap-2 m-2">
-                  <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVoteWeight(statement.id - 1, 2)" (keydown.enter)="changeVoteWeight(statement.id - 1, 2); $event.preventDefault()">
+                  <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVoteWeight(statement.id, 2)" (keydown.enter)="changeVoteWeight(statement.id, 2); $event.preventDefault()">
                     <mat-icon matTooltip="Double weight">speed_2x</mat-icon>
                     Double weight
                   </div>
-                  <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVoteWeight(statement.id - 1, 1)" (keydown.enter)="changeVoteWeight(statement.id - 1, 1); $event.preventDefault()">
+                  <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVoteWeight(statement.id, 1)" (keydown.enter)="changeVoteWeight(statement.id, 1); $event.preventDefault()">
                     <mat-icon matTooltip="Normal weight">1x_mobiledata</mat-icon>
                     Normal weight
                   </div>
@@ -126,11 +129,11 @@
             class="w-100"
             [parties]="parties"
             [statement]="statement"
-            [positions]="positions"
-            [vote]="votes()[statement.id - 1]"
+            [vote]="getVote(statement.id)"
           ></app-overview>
         }
       </div>
     </div>
   </mat-tab>
 </mat-tab-group>
+}

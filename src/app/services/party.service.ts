@@ -2,34 +2,80 @@ import { inject, Injectable } from '@angular/core';
 
 import { Party } from '../models/party.model';
 import { Position } from '../models/position.model';
-import { YamlDataService } from './yaml-data.service';
+import { ElectionDataService } from './election-data.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PartyService {
-  private readonly dataService = inject(YamlDataService);
-  private readonly logoDirectory = 'logos/parties';
+  private readonly dataService = inject(ElectionDataService);
+  private lookupPromise?: Promise<void>;
+  private parties: Party[] = [];
+  private partyById = new Map<string, Party>();
+  private positionsByPartyId = new Map<string, Position[]>();
+  private positionByPartyAndStatement = new Map<string, Position>();
 
-  private positions?: Position[];
+  async getParties(): Promise<Party[]> {
+    await this.initializeLookups();
+    return this.parties;
+  }
 
-  getPartySvgPath(party: Party): string {
-    return `${this.logoDirectory}/${party.id}.svg`;
+  async getParty(partyId: string): Promise<Party | undefined> {
+    await this.initializeLookups();
+    return this.partyById.get(partyId);
+  }
+
+  async getPartyPositions(partyId: string): Promise<Position[]> {
+    await this.initializeLookups();
+    return this.positionsByPartyId.get(partyId) ?? [];
   }
 
   async getPartyPosition(
+    partyId: string,
     statementId: number,
-    party: Party,
   ): Promise<Position | undefined> {
-    if (!this.positions) this.positions = await this.dataService.getPositions();
-    return this.positions.find(
-      position =>
-        position.statementId === statementId && position.partyId === party.id,
+    await this.initializeLookups();
+    return this.positionByPartyAndStatement.get(
+      this.positionKey(partyId, statementId),
     );
   }
 
-  async getPartyPositions(party: Party): Promise<Position[]> {
-    if (!this.positions) this.positions = await this.dataService.getPositions();
-    return this.positions.filter(position => position.partyId === party.id);
+  getPartyLogoPath(party: Party): string {
+    return `logos/parties/${party.id}.svg`;
+  }
+
+  private initializeLookups(): Promise<void> {
+    if (!this.lookupPromise) {
+      this.lookupPromise = Promise.all([
+        this.dataService.getParties(),
+        this.dataService.getPositions(),
+      ])
+        .then(([parties, positions]) => {
+          this.parties = parties;
+          this.partyById = new Map(parties.map(party => [party.id, party]));
+          this.positionsByPartyId = new Map();
+          this.positionByPartyAndStatement = new Map();
+
+          for (const position of positions) {
+            const partyPositions = this.positionsByPartyId.get(position.partyId) ?? [];
+            partyPositions.push(position);
+            this.positionsByPartyId.set(position.partyId, partyPositions);
+            this.positionByPartyAndStatement.set(
+              this.positionKey(position.partyId, position.statementId),
+              position,
+            );
+          }
+        })
+        .catch(error => {
+          this.lookupPromise = undefined;
+          throw error;
+        });
+    }
+
+    return this.lookupPromise;
+  }
+
+  private positionKey(partyId: string, statementId: number): string {
+    return `${partyId}:${statementId}`;
   }
 }

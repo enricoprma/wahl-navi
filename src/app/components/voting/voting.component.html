@@ -97,6 +97,8 @@
         Skip statement
       </button>
     </div>
+  } @else if (errorMessage) {
+    <p role="alert">{{ errorMessage }}</p>
   } @else {
     <mat-spinner></mat-spinner>
   }

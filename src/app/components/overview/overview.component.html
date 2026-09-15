@@ -36,28 +36,30 @@
           </td>
         </tr>
         @for (party of parties; track party.id) {
+          @if (getPartyPosition(party.id); as position) {
           <tr>
             <td class="pe-3" [class.pb-4]="!$last">{{ party.name }}:</td>
             <td class="d-flex justify-content-center" [class.pb-4]="!$last">
-              @switch (getPartyPosition(statement.id, party).opinion) {
+              @switch (position.opinion) {
                 @case (-1) {
-                  <button class="d-flex" matTooltip="Disagree" mat-icon-button aria-label="View disagree position" (click)="openPositionDialog(getPartyPosition(statement.id, party), statement, party)">
+                  <button class="d-flex" matTooltip="Disagree" mat-icon-button aria-label="View disagree position" (click)="openPositionDialog(position, statement, party)">
                     <mat-icon style="color: red">cancel</mat-icon>
                   </button>
                 }
                 @case (0) {
-                  <button class="d-flex" matTooltip="Neutral" mat-icon-button aria-label="View neutral position" (click)="openPositionDialog(getPartyPosition(statement.id, party), statement, party)">
+                  <button class="d-flex" matTooltip="Neutral" mat-icon-button aria-label="View neutral position" (click)="openPositionDialog(position, statement, party)">
                     <mat-icon>mode_standby</mat-icon>
                   </button>
                 }
                 @case (1) {
-                  <button class="d-flex" matTooltip="Agree" mat-icon-button aria-label="View agree position" (click)="openPositionDialog(getPartyPosition(statement.id, party), statement, party)">
+                  <button class="d-flex" matTooltip="Agree" mat-icon-button aria-label="View agree position" (click)="openPositionDialog(position, statement, party)">
                     <mat-icon style="color: green">check_circle</mat-icon>
                   </button>
                 }
               }
             </td>
           </tr>
+          }
         }
       </table>
     </div>
