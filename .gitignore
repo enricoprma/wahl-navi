@@ -10,6 +10,20 @@
 /coverage
 *.log
 
+# Python
+__pycache__/
+*.py[cod]
+/.pytest_cache/
+/.mypy_cache/
+/.ruff_cache/
+/.coverage
+/htmlcov/
+/.venv/
+/venv/
+
+# Temporary Excel files
+~$*.xlsx
+
 # IDEs and operating systems
 /.idea
 /.vscode/*

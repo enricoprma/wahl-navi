@@ -18,7 +18,6 @@
   partyId: pigeon-pragmatists
   opinion: 0
   justification: A one-year weekend pilot would provide evidence for a durable decision.
-
 - statementId: 2
   partyId: early-birds
   opinion: 0
@@ -39,7 +38,6 @@
   partyId: pigeon-pragmatists
   opinion: 1
   justification: A careful block-by-block conversion balances access and public space.
-
 - statementId: 3
   partyId: early-birds
   opinion: 0
@@ -60,7 +58,6 @@
   partyId: pigeon-pragmatists
   opinion: 0
   justification: Start with the busiest square and publish usage and maintenance costs.
-
 - statementId: 4
   partyId: early-birds
   opinion: 1
@@ -81,7 +78,6 @@
   partyId: pigeon-pragmatists
   opinion: 0
   justification: Rotate late opening between branches before committing permanently.
-
 - statementId: 5
   partyId: early-birds
   opinion: 1
@@ -102,7 +98,6 @@
   partyId: pigeon-pragmatists
   opinion: 1
   justification: Temporary gardens are a sensible use for land between projects.
-
 - statementId: 6
   partyId: early-birds
   opinion: 0
@@ -123,7 +118,6 @@
   partyId: pigeon-pragmatists
   opinion: 1
   justification: Weekend-only operation is a measured compromise.
-
 - statementId: 7
   partyId: early-birds
   opinion: 0
@@ -144,7 +138,6 @@
   partyId: pigeon-pragmatists
   opinion: 0
   justification: Begin with a modest fund and review whether participation is representative.
-
 - statementId: 8
   partyId: early-birds
   opinion: 1
@@ -165,7 +158,6 @@
   partyId: pigeon-pragmatists
   opinion: 0
   justification: Publish useful data with plain-language summaries and maintenance ownership.
-
 - statementId: 9
   partyId: early-birds
   opinion: 1
@@ -186,7 +178,6 @@
   partyId: pigeon-pragmatists
   opinion: 0
   justification: Close the most dangerous network gaps first and measure results.
-
 - statementId: 10
   partyId: early-birds
   opinion: 1
@@ -207,7 +198,6 @@
   partyId: pigeon-pragmatists
   opinion: 1
   justification: Install a small network at proven high-traffic locations.
-
 - statementId: 11
   partyId: early-birds
   opinion: -1
@@ -228,7 +218,6 @@
   partyId: pigeon-pragmatists
   opinion: 1
   justification: Managed locations are more practical than pretending urban pigeons do not exist.
-
 - statementId: 12
   partyId: early-birds
   opinion: 1
@@ -248,4 +237,4 @@
 - statementId: 12
   partyId: pigeon-pragmatists
   opinion: 1
-  justification: This is a low-risk consensus opportunity.
+  justification: null

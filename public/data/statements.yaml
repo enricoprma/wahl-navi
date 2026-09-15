@@ -8,7 +8,7 @@
   keywords: Trees and benches
 - id: 3
   text: Public squares should offer free municipal Wi-Fi.
-  explanation: The network would publish its service status on the [Exampleton demo portal](https://example.com).
+  explanation: The network would publish its service status on the <a href="https://example.com" target="_blank" rel="noopener noreferrer">Exampleton demo portal</a>.
   keywords: Public Wi-Fi
 - id: 4
   text: The city library should open later on weekdays.
