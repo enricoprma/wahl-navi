@@ -1,0 +1,103 @@
+<div class="voting d-flex flex-row align-items-start justify-content-center min-vh-100 mt-4">
+  @if (statements.length) {
+    <div class="d-flex flex-column align-items-center gap-4">
+      <div class="bar d-flex flex-column gap-1">
+        <div class="d-flex flex-row justify-content-between align-items-center">
+          <p class="mb-2 desktop">
+            Statement {{ index() + 1 }} of {{ statements.length }}:
+            {{ statements[index()].keywords }}
+          </p>
+          <p class="mb-2 mobile">
+            Statement {{ index() + 1 }} of {{ statements.length }}
+          </p>
+          <button mat-icon-button aria-label="Open help" matTooltip="Help" (click)="openHelpBottomSheet()">
+            <mat-icon>help</mat-icon>
+          </button>
+        </div>
+        <mat-progress-bar [value]="(index() + 1) * 100 / statements.length"></mat-progress-bar>
+      </div>
+
+      <div class="statement-container d-flex flex-column justify-content-center">
+        <div class="d-flex flex-column align-items-center">
+          <div class="d-flex flex-row gap-5 align-items-center justify-content-center w-100">
+            <h2 class="desktop statement-text my-5 text-center">{{ statements[index()].text }}</h2>
+            <h5 class="mobile statement-text my-5 text-center">{{ statements[index()].text }}</h5>
+          </div>
+          @if (statements[index()].explanation) {
+            <div
+              tabindex="0"
+              class="button-explanation zoom-minimal d-flex flex-row gap-2 p-2"
+              (click)="openInfoDialog(statements[index()])"
+              (keydown.enter)="openInfoDialog(statements[index()]); $event.preventDefault()"
+            >
+              <mat-icon>tooltip_2</mat-icon>
+              <p class="m-0">Show additional information</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="d-flex flex-column gap-4 align-items-center mb-3">
+        <div class="d-flex flex-row justify-content-center gap-4">
+          <button
+            [class.was-chosen]="votes()[index()] && votes()[index()].value === 1"
+            (click)="vote({ statementId: statements[index()].id, value: 1, weight: doubleWeightEnabled() ? 2 : 1 })"
+            mat-fab
+            extended
+            class="accept-button"
+            aria-label="Agree"
+          >
+            Agree
+          </button>
+          <button
+            [class.was-chosen]="votes()[index()] && votes()[index()].value === 0"
+            (click)="vote({ statementId: statements[index()].id, value: 0, weight: doubleWeightEnabled() ? 2 : 1 })"
+            mat-fab
+            extended
+            class="neutral-button"
+            aria-label="Neutral"
+          >
+            Neutral
+          </button>
+          <button
+            [class.was-chosen]="votes()[index()] && votes()[index()].value === -1"
+            (click)="vote({ statementId: statements[index()].id, value: -1, weight: doubleWeightEnabled() ? 2 : 1 })"
+            mat-fab
+            extended
+            class="reject-button"
+            aria-label="Disagree"
+          >
+            Disagree
+          </button>
+        </div>
+      </div>
+
+      <div class="d-flex flex-row gap-5 mb-3">
+        <button mat-icon-button aria-label="Previous statement" (click)="setIndex(index() - 1)">
+          <mat-icon matTooltip="Previous statement" [class.disabled-icon]="index() === 0">
+            arrow_back_ios
+          </mat-icon>
+        </button>
+        <button mat-icon-button aria-label="Change answer weight" (click)="toggleDoubleWeight()">
+          <mat-icon matTooltip="Change answer weight">
+            {{ doubleWeightEnabled() ? 'speed_2x' : '1x_mobiledata' }}
+          </mat-icon>
+        </button>
+        <button mat-icon-button aria-label="Next statement" (click)="setIndex(index() + 1)">
+          <mat-icon matTooltip="Next statement">arrow_forward_ios</mat-icon>
+        </button>
+      </div>
+
+      <button
+        mat-fab
+        extended
+        [class.was-chosen]="votes()[index()] && votes()[index()].value === null"
+        (click)="vote({ statementId: statements[index()].id, value: null, weight: doubleWeightEnabled() ? 2 : 1 })"
+      >
+        Skip statement
+      </button>
+    </div>
+  } @else {
+    <mat-spinner></mat-spinner>
+  }
+</div>

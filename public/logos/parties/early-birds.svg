@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Early Bird Party logo</title>
+  <rect width="64" height="64" rx="16" fill="#F59E0B"/>
+  <circle cx="32" cy="31" r="17" fill="#FFF7D6"/>
+  <path d="M21 34c8-1 13-7 15-15 6 5 8 12 5 19-4 8-15 10-23 5 4-1 7-4 8-8l-5-1Z" fill="#92400E"/>
+  <circle cx="38" cy="27" r="2" fill="#FFF7D6"/>
+</svg>

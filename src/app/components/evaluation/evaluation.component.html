@@ -1,0 +1,136 @@
+<mat-tab-group class="evaluation">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="tab-icon">bar_chart</mat-icon>
+      <div class="desktop">Results</div>
+    </ng-template>
+    <ng-template matTabContent>
+      <div class="d-flex justify-content-start align align-items-center my-5">
+        <div class="dashboard-card">
+          <h1 class="mb-3">Your Wahl-Navi {{ location }} results</h1>
+          <p class="mb-5">
+            See how closely the party positions match your answers. Select a
+            party for its detailed positions and justifications.
+          </p>
+          <div class="d-flex flex-column gap-5 dashboard-card-content">
+            @for (agreement of agreements; track agreement.party.id) {
+              <app-agreement [votes]="votes()" [agreement]="agreement"></app-agreement>
+            }
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="tab-icon">quiz</mat-icon>
+      <div class="desktop">Adjust answers</div>
+    </ng-template>
+    <div class="d-flex flex-column justify-content-start align align-items-start my-5 w-100">
+      <h1 class="mb-3">Adjust answers</h1>
+      <p class="mb-3">
+        Change an answer or its weight using the controls on the right. Results
+        update automatically.
+      </p>
+      <div class="d-flex flex-column gap-3 w-100">
+        @for (statement of statements; track statement.id) {
+          <hr />
+          <div class="statement d-flex flex-column justify-content-between align-items-start gap-4 w-100">
+            <h4 class="m-0">{{ statement.text }}</h4>
+            <div class="d-flex flex-row align-items-center gap-3">
+              <div class="d-flex flex-row gap-1 align-items-center">
+                <p class="mb-0 mobile">Your answer:</p>
+                @switch (votes()[statement.id - 1].value) {
+                  @case (-1) {
+                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Change answer">
+                      <mat-icon style="color: red">cancel</mat-icon>
+                    </button>
+                  }
+                  @case (0) {
+                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Change answer">
+                      <mat-icon>mode_standby</mat-icon>
+                    </button>
+                  }
+                  @case (1) {
+                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Change answer">
+                      <mat-icon style="color: green">check_circle</mat-icon>
+                    </button>
+                  }
+                  @case (null) {
+                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Change answer">
+                      <mat-icon>radio_button_unchecked</mat-icon>
+                    </button>
+                  }
+                }
+                <mat-menu #voteMenu="matMenu">
+                  <div class="d-flex flex-column align-items-start gap-2 m-2">
+                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id - 1, 1)" (keydown.enter)="changeVote(statement.id - 1, 1); $event.preventDefault()">
+                      <mat-icon matTooltip="Agree" style="color: green">check_circle</mat-icon>
+                      Agree
+                    </div>
+                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id - 1, 0)" (keydown.enter)="changeVote(statement.id - 1, 0); $event.preventDefault()">
+                      <mat-icon matTooltip="Neutral">mode_standby</mat-icon>
+                      Neutral
+                    </div>
+                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id - 1, -1)" (keydown.enter)="changeVote(statement.id - 1, -1); $event.preventDefault()">
+                      <mat-icon matTooltip="Disagree" style="color: red">cancel</mat-icon>
+                      Disagree
+                    </div>
+                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id - 1, null)" (keydown.enter)="changeVote(statement.id - 1, null); $event.preventDefault()">
+                      <mat-icon matTooltip="Skip">radio_button_unchecked</mat-icon>
+                      Skip
+                    </div>
+                  </div>
+                </mat-menu>
+              </div>
+
+              <div class="d-flex flex-row gap-1 align-items-center">
+                <p class="mb-0 mobile">Weight:</p>
+                <button class="d-flex" mat-icon-button [matMenuTriggerFor]="weightMenu" matTooltip="Change weight">
+                  <mat-icon>{{ votes()[statement.id - 1].weight === 2 ? 'speed_2x' : '1x_mobiledata' }}</mat-icon>
+                </button>
+              </div>
+              <mat-menu #weightMenu="matMenu">
+                <div class="d-flex flex-column align-items-start gap-2 m-2">
+                  <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVoteWeight(statement.id - 1, 2)" (keydown.enter)="changeVoteWeight(statement.id - 1, 2); $event.preventDefault()">
+                    <mat-icon matTooltip="Double weight">speed_2x</mat-icon>
+                    Double weight
+                  </div>
+                  <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVoteWeight(statement.id - 1, 1)" (keydown.enter)="changeVoteWeight(statement.id - 1, 1); $event.preventDefault()">
+                    <mat-icon matTooltip="Normal weight">1x_mobiledata</mat-icon>
+                    Normal weight
+                  </div>
+                </div>
+              </mat-menu>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </mat-tab>
+
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <mat-icon class="tab-icon">table</mat-icon>
+      <div class="desktop">Overview</div>
+    </ng-template>
+    <div class="d-flex flex-column justify-content-start align align-items-start my-5 w-100">
+      <h1 class="mb-3">Overview</h1>
+      <p class="desktop">Review every party position and its available justification.</p>
+      <p class="mobile">Select a statement to review every party position and its available justification.</p>
+      <div class="d-flex flex-column justify-content-center gap-3 w-100">
+        @for (statement of statements; track statement.id) {
+          <hr />
+          <app-overview
+            class="w-100"
+            [parties]="parties"
+            [statement]="statement"
+            [positions]="positions"
+            [vote]="votes()[statement.id - 1]"
+          ></app-overview>
+        }
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>

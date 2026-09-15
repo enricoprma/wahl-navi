@@ -1,0 +1,51 @@
+<div class="dialog-body">
+  <div class="px-3 pt-3 d-flex flex-row justify-content-end">
+    <button mat-icon-button aria-label="Close dialog" (click)="dialogRef.close()">
+      <mat-icon>cancel</mat-icon>
+    </button>
+  </div>
+  <div class="px-5 pb-5 d-flex flex-column gap-2">
+    <p class="mb-0">Statement {{ statement.id }}</p>
+    <h5 class="fw-bold">{{ statement.text }}</h5>
+    <div class="d-flex flex-row gap-3">
+      <p class="mb-0">{{ party.name }}:</p>
+      @switch (position.opinion) {
+        @case (-1) {
+          <mat-icon matTooltip="Disagree" style="color: red">cancel</mat-icon>
+        }
+        @case (0) {
+          <mat-icon matTooltip="Neutral">mode_standby</mat-icon>
+        }
+        @case (1) {
+          <mat-icon matTooltip="Agree" style="color: green">check_circle</mat-icon>
+        }
+      }
+    </div>
+    <div class="d-flex flex-row gap-3">
+      <p class="mb-0">Your answer:</p>
+      @switch (vote.value) {
+        @case (-1) {
+          <mat-icon matTooltip="Disagree" style="color: red">cancel</mat-icon>
+        }
+        @case (0) {
+          <mat-icon matTooltip="Neutral">mode_standby</mat-icon>
+        }
+        @case (1) {
+          <mat-icon matTooltip="Agree" style="color: green">check_circle</mat-icon>
+        }
+        @case (null) {
+          <mat-icon matTooltip="Skipped">radio_button_unchecked</mat-icon>
+        }
+      }
+    </div>
+    @if (vote.weight === 2) {
+      <p class="mb-0 small-p"><i>You gave this statement double weight.</i></p>
+    }
+    <hr />
+    <h6 class="fw-bold">Party justification:</h6>
+    <p
+      class="mb-0"
+      [innerHTML]="position.justification ? '“' + position.justification + '”' : 'The party did not provide a justification.'"
+    ></p>
+  </div>
+</div>

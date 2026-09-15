@@ -1,0 +1,25 @@
+- id: early-birds
+  name: Early Bird Party
+  shortName: EBP
+  color: '#F59E0B'
+  description: Practical optimists who prefer early starts and prompt decisions.
+- id: night-owls
+  name: Night Owl Alliance
+  shortName: NOA
+  color: '#4338CA'
+  description: Advocates for a city that remains useful after sunset.
+- id: green-benches
+  name: Green Bench Coalition
+  shortName: GBC
+  color: '#15803D'
+  description: Focused on comfortable public spaces, shade, and urban nature.
+- id: free-wifi
+  name: Free Wi-Fi Front
+  shortName: FWF
+  color: '#0284C7'
+  description: Champions open connectivity and delightfully transparent services.
+- id: pigeon-pragmatists
+  name: Pigeon Pragmatists
+  shortName: PP
+  color: '#6B7280'
+  description: Looks for workable compromises for residents with or without wings.

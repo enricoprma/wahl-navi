@@ -1,0 +1,251 @@
+- statementId: 1
+  partyId: early-birds
+  opinion: 0
+  justification: Earlier service should be strengthened before the timetable is extended.
+- statementId: 1
+  partyId: night-owls
+  opinion: 1
+  justification: A useful evening economy needs a dependable trip home.
+- statementId: 1
+  partyId: green-benches
+  opinion: 1
+  justification: Frequent buses provide an alternative to late-night car journeys.
+- statementId: 1
+  partyId: free-wifi
+  opinion: 0
+  justification: Extend service where passenger data shows sustained demand.
+- statementId: 1
+  partyId: pigeon-pragmatists
+  opinion: 0
+  justification: A one-year weekend pilot would provide evidence for a durable decision.
+
+- statementId: 2
+  partyId: early-birds
+  opinion: 0
+  justification: Changes should preserve short-stay access for essential errands.
+- statementId: 2
+  partyId: night-owls
+  opinion: 0
+  justification: Benches are welcome if evening lighting and accessibility are included.
+- statementId: 2
+  partyId: green-benches
+  opinion: 1
+  justification: Shade and seating make the center healthier and more inviting.
+- statementId: 2
+  partyId: free-wifi
+  opinion: -1
+  justification: Keep current parking while testing greener uses on temporary street platforms.
+- statementId: 2
+  partyId: pigeon-pragmatists
+  opinion: 1
+  justification: A careful block-by-block conversion balances access and public space.
+
+- statementId: 3
+  partyId: early-birds
+  opinion: 0
+  justification: Connectivity is useful when operating costs remain predictable.
+- statementId: 3
+  partyId: night-owls
+  opinion: 1
+  justification: Public internet keeps squares useful for evening study and events.
+- statementId: 3
+  partyId: green-benches
+  opinion: 0
+  justification: The network should use energy-efficient equipment and clear privacy rules.
+- statementId: 3
+  partyId: free-wifi
+  opinion: 1
+  justification: Connectivity in shared spaces is basic civic infrastructure.
+- statementId: 3
+  partyId: pigeon-pragmatists
+  opinion: 0
+  justification: Start with the busiest square and publish usage and maintenance costs.
+
+- statementId: 4
+  partyId: early-birds
+  opinion: 1
+  justification: A reliable weekday study window is a practical investment.
+- statementId: 4
+  partyId: night-owls
+  opinion: 1
+  justification: Public learning should remain available beyond office hours.
+- statementId: 4
+  partyId: green-benches
+  opinion: 1
+  justification: Libraries are low-impact, welcoming community spaces.
+- statementId: 4
+  partyId: free-wifi
+  opinion: 0
+  justification: Combine selected later hours with stronger digital lending.
+- statementId: 4
+  partyId: pigeon-pragmatists
+  opinion: 0
+  justification: Rotate late opening between branches before committing permanently.
+
+- statementId: 5
+  partyId: early-birds
+  opinion: 1
+  justification: Clear leases can put unused land to productive use quickly.
+- statementId: 5
+  partyId: night-owls
+  opinion: 0
+  justification: Gardens need fair access rules for residents with different schedules.
+- statementId: 5
+  partyId: green-benches
+  opinion: 1
+  justification: Community gardens support biodiversity and neighborhood ties.
+- statementId: 5
+  partyId: free-wifi
+  opinion: 0
+  justification: Publish available plots and waiting lists through an open application process.
+- statementId: 5
+  partyId: pigeon-pragmatists
+  opinion: 1
+  justification: Temporary gardens are a sensible use for land between projects.
+
+- statementId: 6
+  partyId: early-birds
+  opinion: 0
+  justification: Test weekend closures before changing access permanently.
+- statementId: 6
+  partyId: night-owls
+  opinion: 0
+  justification: Evening events must include safe late transport and accessible routes.
+- statementId: 6
+  partyId: green-benches
+  opinion: 1
+  justification: A quieter central square creates room for people and local events.
+- statementId: 6
+  partyId: free-wifi
+  opinion: -1
+  justification: Improve traffic data and delivery coordination before restricting access.
+- statementId: 6
+  partyId: pigeon-pragmatists
+  opinion: 1
+  justification: Weekend-only operation is a measured compromise.
+
+- statementId: 7
+  partyId: early-birds
+  opinion: 0
+  justification: Resident proposals need firm cost and delivery deadlines.
+- statementId: 7
+  partyId: night-owls
+  opinion: 1
+  justification: Flexible participation gives more residents a voice in local priorities.
+- statementId: 7
+  partyId: green-benches
+  opinion: 1
+  justification: Neighborhood knowledge can identify small projects with large benefits.
+- statementId: 7
+  partyId: free-wifi
+  opinion: 1
+  justification: A transparent digital process can make public choices easy to audit.
+- statementId: 7
+  partyId: pigeon-pragmatists
+  opinion: 0
+  justification: Begin with a modest fund and review whether participation is representative.
+
+- statementId: 8
+  partyId: early-birds
+  opinion: 1
+  justification: Clear spending records help residents understand city priorities.
+- statementId: 8
+  partyId: night-owls
+  opinion: 1
+  justification: Public information should be available whenever residents have time to use it.
+- statementId: 8
+  partyId: green-benches
+  opinion: 1
+  justification: Open data makes environmental and infrastructure commitments measurable.
+- statementId: 8
+  partyId: free-wifi
+  opinion: 1
+  justification: Machine-readable spending is essential for accountable digital government.
+- statementId: 8
+  partyId: pigeon-pragmatists
+  opinion: 0
+  justification: Publish useful data with plain-language summaries and maintenance ownership.
+
+- statementId: 9
+  partyId: early-birds
+  opinion: 1
+  justification: Safe school and commuter routes reduce avoidable congestion.
+- statementId: 9
+  partyId: night-owls
+  opinion: 0
+  justification: Protected routes also need lighting and late-hour maintenance.
+- statementId: 9
+  partyId: green-benches
+  opinion: 1
+  justification: Connected protected lanes make low-emission travel practical.
+- statementId: 9
+  partyId: free-wifi
+  opinion: -1
+  justification: Improve route data and repair existing lanes before expanding the network.
+- statementId: 9
+  partyId: pigeon-pragmatists
+  opinion: 0
+  justification: Close the most dangerous network gaps first and measure results.
+
+- statementId: 10
+  partyId: early-birds
+  opinion: 1
+  justification: Reliable fountains are a straightforward public-health service.
+- statementId: 10
+  partyId: night-owls
+  opinion: 1
+  justification: Well-lit fountains support residents and visitors throughout the evening.
+- statementId: 10
+  partyId: green-benches
+  opinion: 1
+  justification: Refill access reduces disposable bottles and heat risk.
+- statementId: 10
+  partyId: free-wifi
+  opinion: 0
+  justification: Publish maintenance status so broken fountains are reported and repaired quickly.
+- statementId: 10
+  partyId: pigeon-pragmatists
+  opinion: 1
+  justification: Install a small network at proven high-traffic locations.
+
+- statementId: 11
+  partyId: early-birds
+  opinion: -1
+  justification: Consistent public guidance is preferable to maintaining feeding areas.
+- statementId: 11
+  partyId: night-owls
+  opinion: 0
+  justification: Any pilot needs cleaning schedules that continue after dark.
+- statementId: 11
+  partyId: green-benches
+  opinion: 0
+  justification: Wildlife specialists should determine whether managed feeding improves welfare.
+- statementId: 11
+  partyId: free-wifi
+  opinion: -1
+  justification: Use clear information and reporting tools instead of new physical sites.
+- statementId: 11
+  partyId: pigeon-pragmatists
+  opinion: 1
+  justification: Managed locations are more practical than pretending urban pigeons do not exist.
+
+- statementId: 12
+  partyId: early-birds
+  opinion: 1
+  justification: Meetings that begin on time deserve coffee that did too.
+- statementId: 12
+  partyId: night-owls
+  opinion: 1
+  justification: Long evening agendas require humane refreshment.
+- statementId: 12
+  partyId: green-benches
+  opinion: 0
+  justification: Choose reusable cups and responsibly sourced options if coffee is provided.
+- statementId: 12
+  partyId: free-wifi
+  opinion: 1
+  justification: Publish the coffee machine status alongside the meeting agenda.
+- statementId: 12
+  partyId: pigeon-pragmatists
+  opinion: 1
+  justification: This is a low-risk consensus opportunity.

@@ -1,0 +1,21 @@
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Dependencies and tooling caches
+/node_modules
+/.angular/cache
+/coverage
+*.log
+
+# IDEs and operating systems
+/.idea
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/tasks.json
+!/.vscode/launch.json
+!/.vscode/extensions.json
+.DS_Store
+Thumbs.db

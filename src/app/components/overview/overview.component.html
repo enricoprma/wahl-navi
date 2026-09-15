@@ -1,0 +1,65 @@
+<div class="d-flex flex-column justify-content-between align-items-start gap-4">
+  <div class="d-flex flex-row gap-3 align-content-center justify-content-between w-100 mw-100">
+    <h4 class="m-0 desktop">{{ statement.text }}</h4>
+    <h4 class="m-0 mobile" (click)="toggleExpanded()">{{ statement.text }}</h4>
+    @if (!expanded) {
+      <button mat-mini-fab class="mx-5 desktop" aria-label="Expand statement" (click)="toggleExpanded()">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+      </button>
+    } @else {
+      <button mat-mini-fab class="mx-5 desktop" aria-label="Collapse statement" (click)="toggleExpanded()">
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+    }
+  </div>
+
+  @if (expanded) {
+    <div class="d-flex flex-row gap-5">
+      <table>
+        <tr>
+          <td class="pe-3 pb-4"><b>You:</b></td>
+          <td class="d-flex justify-content-center pb-4">
+            @switch (vote.value) {
+              @case (-1) {
+                <mat-icon matTooltip="Disagree" style="color: red">cancel</mat-icon>
+              }
+              @case (0) {
+                <mat-icon matTooltip="Neutral">mode_standby</mat-icon>
+              }
+              @case (1) {
+                <mat-icon matTooltip="Agree" style="color: green">check_circle</mat-icon>
+              }
+              @case (null) {
+                <mat-icon matTooltip="Skipped">radio_button_unchecked</mat-icon>
+              }
+            }
+          </td>
+        </tr>
+        @for (party of parties; track party.id) {
+          <tr>
+            <td class="pe-3" [class.pb-4]="!$last">{{ party.name }}:</td>
+            <td class="d-flex justify-content-center" [class.pb-4]="!$last">
+              @switch (getPartyPosition(statement.id, party).opinion) {
+                @case (-1) {
+                  <button class="d-flex" matTooltip="Disagree" mat-icon-button aria-label="View disagree position" (click)="openPositionDialog(getPartyPosition(statement.id, party), statement, party)">
+                    <mat-icon style="color: red">cancel</mat-icon>
+                  </button>
+                }
+                @case (0) {
+                  <button class="d-flex" matTooltip="Neutral" mat-icon-button aria-label="View neutral position" (click)="openPositionDialog(getPartyPosition(statement.id, party), statement, party)">
+                    <mat-icon>mode_standby</mat-icon>
+                  </button>
+                }
+                @case (1) {
+                  <button class="d-flex" matTooltip="Agree" mat-icon-button aria-label="View agree position" (click)="openPositionDialog(getPartyPosition(statement.id, party), statement, party)">
+                    <mat-icon style="color: green">check_circle</mat-icon>
+                  </button>
+                }
+              }
+            </td>
+          </tr>
+        }
+      </table>
+    </div>
+  }
+</div>

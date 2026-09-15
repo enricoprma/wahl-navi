@@ -1,0 +1,48 @@
+<div class="d-flex flex-column min-vh-100 bg-light">
+  <main class="container my-auto py-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-9">
+        <div class="card shadow-sm border-0 rounded-4">
+          <div class="card-body p-4 p-md-5 text-center">
+            @if (metadata) {
+              <div class="d-inline-flex align-items-center gap-2 mb-4">
+                <mat-icon>how_to_vote</mat-icon>
+                <span class="text-uppercase small text-secondary fw-semibold">
+                  {{ metadata.appTitle }} · {{ metadata.location }}
+                </span>
+              </div>
+              <h1 class="display-5 fw-bold mb-4">Welcome!</h1>
+              <p class="lead text-secondary mb-4">
+                Compare your views on {{ numberOfStatements }} local issues with
+                the positions of {{ numberOfParties }} fictional parties in the
+                {{ metadata.electionTitle }}.
+              </p>
+              <p class="text-secondary mb-4">
+                Wahl-Navi is an orientation and comparison tool, not a voting
+                recommendation.
+              </p>
+              <p class="text-secondary mb-5">{{ metadata.disclaimer }}</p>
+
+              <button
+                mat-raised-button
+                color="primary"
+                class="px-4 py-2 mt-3"
+                (click)="start()"
+              >
+                Start
+              </button>
+            } @else {
+              <p class="text-secondary mb-0">Loading election data…</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="mt-auto border-top">
+    <div class="container py-3 small text-muted text-center">
+      Built by Enrico Perea Mancilla · Fictional demo data
+    </div>
+  </footer>
+</div>
