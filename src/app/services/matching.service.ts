@@ -1,13 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 
-import { AgreementResult } from '../models/agreement-result.model';
-import { Party } from '../models/party.model';
-import { Position } from '../models/position.model';
-import { Vote } from '../models/vote.model';
+import { AgreementResult } from "../models/agreement-result.model";
+import { Party } from "../models/party.model";
+import { Position } from "../models/position.model";
+import { Vote } from "../models/vote.model";
 
 /** Calculates consistently rounded, descending agreement results. */
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class MatchingService {
   calculateAgreements(
@@ -24,7 +24,7 @@ export class MatchingService {
     }
 
     return parties
-      .map(party => {
+      .map((party) => {
         let matchedWeight = 0;
         let answeredWeight = 0;
 

@@ -1,4 +1,4 @@
-import { Opinion } from './opinion.model';
+import { Opinion } from "./opinion.model";
 
 /** Represents a party's position on a statement. */
 export interface Position {

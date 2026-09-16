@@ -1,144 +1,229 @@
 @if (errorMessage) {
   <div class="my-5" role="alert">{{ errorMessage }}</div>
 } @else {
-<mat-tab-group class="evaluation">
-  <mat-tab>
-    <ng-template mat-tab-label>
-      <mat-icon class="tab-icon">bar_chart</mat-icon>
-      <div class="desktop">Results</div>
-    </ng-template>
-    <ng-template matTabContent>
-      <div class="d-flex justify-content-start align align-items-center my-5 px-2">
-        <div class="dashboard-card">
-          <h1 class="mb-3">Your Wahl-Navi {{ location }} results</h1>
-          <p class="mb-5">
-            See how closely the party positions match your answers. Select a
-            party for its detailed positions and justifications.
-          </p>
-          <div class="d-flex flex-column gap-5 dashboard-card-content">
-            @for (agreement of agreements; track agreement.party.id) {
-              <app-agreement [votes]="votes()" [agreement]="agreement"></app-agreement>
-            }
+  <mat-tab-group class="evaluation">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">bar_chart</mat-icon>
+        <div class="desktop">Results</div>
+      </ng-template>
+      <ng-template matTabContent>
+        <div
+          class="d-flex justify-content-start align align-items-center my-5 px-2"
+        >
+          <div class="dashboard-card">
+            <h1 class="mb-3">Your Wahl-Navi {{ location }} results</h1>
+            <p class="mb-5">
+              See how closely the party positions match your answers. Select a
+              party for its detailed positions and justifications.
+            </p>
+            <div class="d-flex flex-column gap-5 dashboard-card-content">
+              @for (agreement of agreements; track agreement.party.id) {
+                <app-agreement
+                  [votes]="votes()"
+                  [agreement]="agreement"
+                ></app-agreement>
+              }
+            </div>
           </div>
         </div>
-      </div>
-    </ng-template>
-  </mat-tab>
+      </ng-template>
+    </mat-tab>
 
-  <mat-tab>
-    <ng-template mat-tab-label>
-      <mat-icon class="tab-icon">quiz</mat-icon>
-      <div class="desktop">Adjust answers</div>
-    </ng-template>
-    <div class="d-flex flex-column justify-content-start align align-items-start my-5 w-100">
-      <h1 class="mb-3">Adjust answers</h1>
-      <p class="mb-3 desktop">
-        Change an answer or its weight using the controls on the right. Results
-        update automatically.
-      </p>
-      <p class="mb-3 mobile">
-        Change an answer or its weight by clicking on your selected answer/weight icon.
-      </p>
-      <div class="d-flex flex-column gap-3 w-100">
-        @for (statement of statements; track statement.id) {
-          <hr />
-          <div class="statement d-flex flex-column justify-content-between align-items-start gap-4 w-100">
-            <h4 class="m-0">{{ statement.text }}</h4>
-            <div class="d-flex flex-row align-items-center gap-3">
-              <div class="d-flex flex-row gap-1 align-items-center">
-                <p class="mb-0 mobile">Your answer:</p>
-                @let vote = getVote(statement.id);
-                @if (!vote || vote.value === null) {
-                  <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Current answer: No answer. Change answer" aria-label="Current answer: No answer. Change answer">
-                    <mat-icon>radio_button_unchecked</mat-icon>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">quiz</mat-icon>
+        <div class="desktop">Adjust answers</div>
+      </ng-template>
+      <div
+        class="d-flex flex-column justify-content-start align align-items-start my-5 w-100"
+      >
+        <h1 class="mb-3">Adjust answers</h1>
+        <p class="mb-3 desktop">
+          Change an answer or its weight using the controls on the right.
+          Results update automatically.
+        </p>
+        <p class="mb-3 mobile">
+          Change an answer or its weight by clicking on your selected
+          answer/weight icon.
+        </p>
+        <div class="d-flex flex-column gap-3 w-100">
+          @for (statement of statements; track statement.id) {
+            <hr />
+            <div
+              class="statement d-flex flex-column justify-content-between align-items-start gap-4 w-100"
+            >
+              <h4 class="m-0">{{ statement.text }}</h4>
+              <div class="d-flex flex-row align-items-center gap-3">
+                <div class="d-flex flex-row gap-1 align-items-center">
+                  <p class="mb-0 mobile">Your answer:</p>
+                  @let vote = getVote(statement.id);
+                  @if (!vote || vote.value === null) {
+                    <button
+                      class="d-flex"
+                      mat-icon-button
+                      [matMenuTriggerFor]="voteMenu"
+                      matTooltip="Current answer: No answer. Change answer"
+                      aria-label="Current answer: No answer. Change answer"
+                    >
+                      <mat-icon>radio_button_unchecked</mat-icon>
+                    </button>
+                  } @else {
+                    @switch (vote.value) {
+                      @case (-1) {
+                        <button
+                          class="d-flex"
+                          mat-icon-button
+                          [matMenuTriggerFor]="voteMenu"
+                          matTooltip="Current answer: Disagree. Change answer"
+                          aria-label="Current answer: Disagree. Change answer"
+                        >
+                          <mat-icon style="color: red">cancel</mat-icon>
+                        </button>
+                      }
+                      @case (0) {
+                        <button
+                          class="d-flex"
+                          mat-icon-button
+                          [matMenuTriggerFor]="voteMenu"
+                          matTooltip="Current answer: Neutral. Change answer"
+                          aria-label="Current answer: Neutral. Change answer"
+                        >
+                          <mat-icon>mode_standby</mat-icon>
+                        </button>
+                      }
+                      @case (1) {
+                        <button
+                          class="d-flex"
+                          mat-icon-button
+                          [matMenuTriggerFor]="voteMenu"
+                          matTooltip="Current answer: Agree. Change answer"
+                          aria-label="Current answer: Agree. Change answer"
+                        >
+                          <mat-icon style="color: green">check_circle</mat-icon>
+                        </button>
+                      }
+                    }
+                  }
+                  <mat-menu #voteMenu="matMenu">
+                    <div class="d-flex flex-column align-items-start m-2">
+                      <button
+                        mat-menu-item
+                        (click)="changeVote(statement.id, 1)"
+                      >
+                        <mat-icon matTooltip="Agree" style="color: green"
+                          >check_circle</mat-icon
+                        >
+                        Agree
+                      </button>
+                      <button
+                        mat-menu-item
+                        (click)="changeVote(statement.id, 0)"
+                      >
+                        <mat-icon matTooltip="Neutral">mode_standby</mat-icon>
+                        Neutral
+                      </button>
+                      <button
+                        mat-menu-item
+                        (click)="changeVote(statement.id, -1)"
+                      >
+                        <mat-icon matTooltip="Disagree" style="color: red"
+                          >cancel</mat-icon
+                        >
+                        Disagree
+                      </button>
+                      <button
+                        mat-menu-item
+                        (click)="changeVote(statement.id, null)"
+                      >
+                        <mat-icon matTooltip="Skip"
+                          >radio_button_unchecked</mat-icon
+                        >
+                        Skip
+                      </button>
+                    </div>
+                  </mat-menu>
+                </div>
+
+                <div class="d-flex flex-row gap-1 align-items-center">
+                  <p class="mb-0 mobile">Weight:</p>
+                  <button
+                    class="d-flex"
+                    mat-icon-button
+                    [matMenuTriggerFor]="weightMenu"
+                    [matTooltip]="
+                      getWeight(statement.id) === 2
+                        ? 'Current weight: Double. Change weight'
+                        : 'Current weight: Normal. Change weight'
+                    "
+                    [attr.aria-label]="
+                      getWeight(statement.id) === 2
+                        ? 'Current weight: Double. Change weight'
+                        : 'Current weight: Normal. Change weight'
+                    "
+                  >
+                    <mat-icon>{{
+                      getWeight(statement.id) === 2
+                        ? "speed_2x"
+                        : "1x_mobiledata"
+                    }}</mat-icon>
                   </button>
-                } @else {
-                @switch (vote.value) {
-                  @case (-1) {
-                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Current answer: Disagree. Change answer" aria-label="Current answer: Disagree. Change answer">
-                      <mat-icon style="color: red">cancel</mat-icon>
-                    </button>
-                  }
-                  @case (0) {
-                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Current answer: Neutral. Change answer" aria-label="Current answer: Neutral. Change answer">
-                      <mat-icon>mode_standby</mat-icon>
-                    </button>
-                  }
-                  @case (1) {
-                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Current answer: Agree. Change answer" aria-label="Current answer: Agree. Change answer">
-                      <mat-icon style="color: green">check_circle</mat-icon>
-                    </button>
-                  }
-                }
-                }
-                <mat-menu #voteMenu="matMenu">
+                </div>
+                <mat-menu #weightMenu="matMenu">
                   <div class="d-flex flex-column align-items-start m-2">
-                    <button mat-menu-item (click)="changeVote(statement.id, 1)">
-                      <mat-icon matTooltip="Agree" style="color: green">check_circle</mat-icon>
-                      Agree
+                    <button
+                      mat-menu-item
+                      (click)="changeVoteWeight(statement.id, 2)"
+                    >
+                      <mat-icon matTooltip="Double weight">speed_2x</mat-icon>
+                      Double weight
                     </button>
-                    <button mat-menu-item (click)="changeVote(statement.id, 0)">
-                      <mat-icon matTooltip="Neutral">mode_standby</mat-icon>
-                      Neutral
-                    </button>
-                    <button mat-menu-item (click)="changeVote(statement.id, -1)">
-                      <mat-icon matTooltip="Disagree" style="color: red">cancel</mat-icon>
-                      Disagree
-                    </button>
-                    <button mat-menu-item (click)="changeVote(statement.id, null)">
-                      <mat-icon matTooltip="Skip">radio_button_unchecked</mat-icon>
-                      Skip
+                    <button
+                      mat-menu-item
+                      (click)="changeVoteWeight(statement.id, 1)"
+                    >
+                      <mat-icon matTooltip="Normal weight"
+                        >1x_mobiledata</mat-icon
+                      >
+                      Normal weight
                     </button>
                   </div>
                 </mat-menu>
               </div>
-
-              <div class="d-flex flex-row gap-1 align-items-center">
-                <p class="mb-0 mobile">Weight:</p>
-                <button class="d-flex" mat-icon-button [matMenuTriggerFor]="weightMenu" [matTooltip]="getWeight(statement.id) === 2 ? 'Current weight: Double. Change weight' : 'Current weight: Normal. Change weight'" [attr.aria-label]="getWeight(statement.id) === 2 ? 'Current weight: Double. Change weight' : 'Current weight: Normal. Change weight'">
-                  <mat-icon>{{ getWeight(statement.id) === 2 ? 'speed_2x' : '1x_mobiledata' }}</mat-icon>
-                </button>
-              </div>
-              <mat-menu #weightMenu="matMenu">
-                <div class="d-flex flex-column align-items-start m-2">
-                  <button mat-menu-item (click)="changeVoteWeight(statement.id, 2)">
-                    <mat-icon matTooltip="Double weight">speed_2x</mat-icon>
-                    Double weight
-                  </button>
-                  <button mat-menu-item (click)="changeVoteWeight(statement.id, 1)">
-                    <mat-icon matTooltip="Normal weight">1x_mobiledata</mat-icon>
-                    Normal weight
-                  </button>
-                </div>
-              </mat-menu>
             </div>
-          </div>
-        }
+          }
+        </div>
       </div>
-    </div>
-  </mat-tab>
+    </mat-tab>
 
-  <mat-tab>
-    <ng-template mat-tab-label>
-      <mat-icon class="tab-icon">table</mat-icon>
-      <div class="desktop">Overview</div>
-    </ng-template>
-    <div class="d-flex flex-column justify-content-start align align-items-start my-5 w-100">
-      <h1 class="mb-3">Overview</h1>
-      <p class="desktop">Review every party position and its available justification.</p>
-      <p class="mobile">Select a statement to review every party position and its available justification.</p>
-      <div class="d-flex flex-column justify-content-center gap-3 w-100">
-        @for (statement of statements; track statement.id) {
-          <hr />
-          <app-overview
-            class="w-100"
-            [parties]="parties"
-            [statement]="statement"
-            [vote]="getVote(statement.id)"
-          ></app-overview>
-        }
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="tab-icon">table</mat-icon>
+        <div class="desktop">Overview</div>
+      </ng-template>
+      <div
+        class="d-flex flex-column justify-content-start align align-items-start my-5 w-100"
+      >
+        <h1 class="mb-3">Overview</h1>
+        <p class="desktop">
+          Review every party position and its available justification.
+        </p>
+        <p class="mobile">
+          Select a statement to review every party position and its available
+          justification.
+        </p>
+        <div class="d-flex flex-column justify-content-center gap-3 w-100">
+          @for (statement of statements; track statement.id) {
+            <hr />
+            <app-overview
+              class="w-100"
+              [parties]="parties"
+              [statement]="statement"
+              [vote]="getVote(statement.id)"
+            ></app-overview>
+          }
+        </div>
       </div>
-    </div>
-  </mat-tab>
-</mat-tab-group>
+    </mat-tab>
+  </mat-tab-group>
 }

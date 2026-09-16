@@ -1,20 +1,45 @@
 @if (agreement) {
-  <div class="d-flex flex-column" [class.gap-3]="expanded" [class.gap-2]="!expanded">
+  <div
+    class="d-flex flex-column"
+    [class.gap-3]="expanded"
+    [class.gap-2]="!expanded"
+  >
     <div class="d-flex flex-column">
       @if (animationEnded()) {
         <div class="agreement-heading d-flex flex-row gap-1 align-items-center">
           <div class="party-identity d-flex flex-row gap-3 align-items-center">
-            <img width="48" [src]="getPartyLogoPath(agreement.party)" [alt]="agreement.party.name + ' logo'" />
+            <img
+              width="48"
+              [src]="getPartyLogoPath(agreement.party)"
+              [alt]="agreement.party.name + ' logo'"
+            />
             <h4 class="party-name mb-0 desktop">{{ agreement.party.name }}</h4>
-            <h4 class="party-name mb-0 mobile">{{ agreement.party.shortName }}</h4>
+            <h4 class="party-name mb-0 mobile">
+              {{ agreement.party.shortName }}
+            </h4>
           </div>
-          <button mat-icon-button [attr.aria-label]="(expanded ? 'Collapse' : 'Expand') + ' details for ' + agreement.party.name" [attr.aria-expanded]="expanded" [attr.aria-controls]="'party-details-' + agreement.party.id" (click)="toggleExpanded()">
-            <mat-icon>{{ !expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon>
+          <button
+            mat-icon-button
+            [attr.aria-label]="
+              (expanded ? 'Collapse' : 'Expand') +
+              ' details for ' +
+              agreement.party.name
+            "
+            [attr.aria-expanded]="expanded"
+            [attr.aria-controls]="'party-details-' + agreement.party.id"
+            (click)="toggleExpanded()"
+          >
+            <mat-icon>{{
+              !expanded ? "keyboard_arrow_down" : "keyboard_arrow_up"
+            }}</mat-icon>
           </button>
         </div>
       }
       <section class="agreement-progress">
-        <mat-progress-bar mode="determinate" [value]="displayPercent()"></mat-progress-bar>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="displayPercent()"
+        ></mat-progress-bar>
         <h2 class="agreement-percentage">{{ displayPercent().toFixed(1) }}%</h2>
       </section>
     </div>
@@ -31,33 +56,77 @@
             <tbody>
               @for (position of positions; track position.statementId) {
                 @if (getStatement(position.statementId); as statement) {
-                <tr>
-                  <td class="small-p m-0 align-middle ps-0 mobile">{{ statement.keywords }}:</td>
-                  <td class="m-0 align-middle ps-0 desktop">{{ statement.keywords }}:</td>
-                  @switch (position.opinion) {
-                    @case (-1) {
-                      <td class="d-flex justify-content-end">
-                        <button mat-icon-button aria-label="View disagree position" (click)="openPositionDialog(position, statement, agreement.party)">
-                          <mat-icon [matTooltip]="statement.text" style="color: red">cancel</mat-icon>
-                        </button>
-                      </td>
+                  <tr>
+                    <td class="small-p m-0 align-middle ps-0 mobile">
+                      {{ statement.keywords }}:
+                    </td>
+                    <td class="m-0 align-middle ps-0 desktop">
+                      {{ statement.keywords }}:
+                    </td>
+                    @switch (position.opinion) {
+                      @case (-1) {
+                        <td class="d-flex justify-content-end">
+                          <button
+                            mat-icon-button
+                            aria-label="View disagree position"
+                            (click)="
+                              openPositionDialog(
+                                position,
+                                statement,
+                                agreement.party
+                              )
+                            "
+                          >
+                            <mat-icon
+                              [matTooltip]="statement.text"
+                              style="color: red"
+                              >cancel</mat-icon
+                            >
+                          </button>
+                        </td>
+                      }
+                      @case (0) {
+                        <td class="d-flex justify-content-end">
+                          <button
+                            mat-icon-button
+                            aria-label="View neutral position"
+                            (click)="
+                              openPositionDialog(
+                                position,
+                                statement,
+                                agreement.party
+                              )
+                            "
+                          >
+                            <mat-icon [matTooltip]="statement.text"
+                              >mode_standby</mat-icon
+                            >
+                          </button>
+                        </td>
+                      }
+                      @case (1) {
+                        <td class="d-flex justify-content-end">
+                          <button
+                            mat-icon-button
+                            aria-label="View agree position"
+                            (click)="
+                              openPositionDialog(
+                                position,
+                                statement,
+                                agreement.party
+                              )
+                            "
+                          >
+                            <mat-icon
+                              [matTooltip]="statement.text"
+                              style="color: green"
+                              >check_circle</mat-icon
+                            >
+                          </button>
+                        </td>
+                      }
                     }
-                    @case (0) {
-                      <td class="d-flex justify-content-end">
-                        <button mat-icon-button aria-label="View neutral position" (click)="openPositionDialog(position, statement, agreement.party)">
-                          <mat-icon [matTooltip]="statement.text">mode_standby</mat-icon>
-                        </button>
-                      </td>
-                    }
-                    @case (1) {
-                      <td class="d-flex justify-content-end">
-                        <button mat-icon-button aria-label="View agree position" (click)="openPositionDialog(position, statement, agreement.party)">
-                          <mat-icon [matTooltip]="statement.text" style="color: green">check_circle</mat-icon>
-                        </button>
-                      </td>
-                    }
-                  }
-                </tr>
+                  </tr>
                 }
               }
             </tbody>

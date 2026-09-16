@@ -1,11 +1,11 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable } from "@angular/core";
 
-import { Party } from '../models/party.model';
-import { Position } from '../models/position.model';
-import { ElectionDataService } from './election-data.service';
+import { Party } from "../models/party.model";
+import { Position } from "../models/position.model";
+import { ElectionDataService } from "./election-data.service";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class PartyService {
   private readonly dataService = inject(ElectionDataService);
@@ -52,12 +52,13 @@ export class PartyService {
       ])
         .then(([parties, positions]) => {
           this.parties = parties;
-          this.partyById = new Map(parties.map(party => [party.id, party]));
+          this.partyById = new Map(parties.map((party) => [party.id, party]));
           this.positionsByPartyId = new Map();
           this.positionByPartyAndStatement = new Map();
 
           for (const position of positions) {
-            const partyPositions = this.positionsByPartyId.get(position.partyId) ?? [];
+            const partyPositions =
+              this.positionsByPartyId.get(position.partyId) ?? [];
             partyPositions.push(position);
             this.positionsByPartyId.set(position.partyId, partyPositions);
             this.positionByPartyAndStatement.set(
@@ -66,7 +67,7 @@ export class PartyService {
             );
           }
         })
-        .catch(error => {
+        .catch((error) => {
           this.lookupPromise = undefined;
           throw error;
         });

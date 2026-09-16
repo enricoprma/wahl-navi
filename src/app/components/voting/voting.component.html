@@ -1,4 +1,6 @@
-<main class="voting d-flex flex-row align-items-start justify-content-center min-vh-100 mt-4">
+<main
+  class="voting d-flex flex-row align-items-start justify-content-center min-vh-100 mt-4"
+>
   @if (statements.length) {
     <div class="d-flex flex-column align-items-center gap-4">
       <div class="bar d-flex flex-column gap-1">
@@ -10,17 +12,30 @@
           <p class="mb-2 mobile">
             Statement {{ index() + 1 }} of {{ statements.length }}
           </p>
-          <button mat-icon-button aria-label="Open help" matTooltip="Help" (click)="openHelpBottomSheet()">
+          <button
+            mat-icon-button
+            aria-label="Open help"
+            matTooltip="Help"
+            (click)="openHelpBottomSheet()"
+          >
             <mat-icon>help</mat-icon>
           </button>
         </div>
-        <mat-progress-bar [value]="(index() + 1) * 100 / statements.length"></mat-progress-bar>
+        <mat-progress-bar
+          [value]="((index() + 1) * 100) / statements.length"
+        ></mat-progress-bar>
       </div>
 
-      <div class="statement-container d-flex flex-column justify-content-center">
+      <div
+        class="statement-container d-flex flex-column justify-content-center"
+      >
         <div class="d-flex flex-column align-items-center">
-          <div class="d-flex flex-row gap-5 align-items-center justify-content-center w-100">
-            <h1 class="statement-text my-5 text-center">{{ statements[index()].text }}</h1>
+          <div
+            class="d-flex flex-row gap-5 align-items-center justify-content-center w-100"
+          >
+            <h1 class="statement-text my-5 text-center">
+              {{ statements[index()].text }}
+            </h1>
           </div>
           @if (statements[index()].explanation) {
             <button
@@ -37,7 +52,9 @@
       </div>
 
       <div class="d-flex flex-column gap-4 align-items-center mb-3">
-        <div class="answer-controls d-flex flex-row justify-content-center gap-4">
+        <div
+          class="answer-controls d-flex flex-row justify-content-center gap-4"
+        >
           <button
             [class.was-chosen]="getVote(statements[index()].id)?.value === 1"
             [attr.aria-pressed]="getVote(statements[index()].id)?.value === 1"
@@ -75,17 +92,39 @@
       </div>
 
       <div class="navigation-controls d-flex flex-row gap-5 mb-3">
-        <button mat-icon-button aria-label="Previous statement" matTooltip="Previous statement" [disabled]="index() === 0" (click)="setIndex(index() - 1)">
+        <button
+          mat-icon-button
+          aria-label="Previous statement"
+          matTooltip="Previous statement"
+          [disabled]="index() === 0"
+          (click)="setIndex(index() - 1)"
+        >
+          <mat-icon aria-hidden="true"> arrow_back_ios </mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          [attr.aria-label]="
+            doubleWeightEnabled()
+              ? 'Double weight enabled. Change answer weight'
+              : 'Normal weight. Change answer weight'
+          "
+          [attr.aria-pressed]="doubleWeightEnabled()"
+          [matTooltip]="
+            doubleWeightEnabled() ? 'Double weight enabled' : 'Normal weight'
+          "
+          (click)="toggleDoubleWeight()"
+        >
           <mat-icon aria-hidden="true">
-            arrow_back_ios
+            {{ doubleWeightEnabled() ? "speed_2x" : "1x_mobiledata" }}
           </mat-icon>
         </button>
-        <button mat-icon-button [attr.aria-label]="doubleWeightEnabled() ? 'Double weight enabled. Change answer weight' : 'Normal weight. Change answer weight'" [attr.aria-pressed]="doubleWeightEnabled()" [matTooltip]="doubleWeightEnabled() ? 'Double weight enabled' : 'Normal weight'" (click)="toggleDoubleWeight()">
-          <mat-icon aria-hidden="true">
-            {{ doubleWeightEnabled() ? 'speed_2x' : '1x_mobiledata' }}
-          </mat-icon>
-        </button>
-        <button mat-icon-button aria-label="Next statement" matTooltip="Next statement" [disabled]="index() === statements.length - 1" (click)="setIndex(index() + 1)">
+        <button
+          mat-icon-button
+          aria-label="Next statement"
+          matTooltip="Next statement"
+          [disabled]="index() === statements.length - 1"
+          (click)="setIndex(index() + 1)"
+        >
           <mat-icon aria-hidden="true">arrow_forward_ios</mat-icon>
         </button>
       </div>

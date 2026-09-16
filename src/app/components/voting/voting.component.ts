@@ -1,25 +1,28 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
+import { Component, computed, inject, OnInit, signal } from "@angular/core";
+import { MatBadgeModule } from "@angular/material/badge";
+import {
+  MatBottomSheet,
+  MatBottomSheetModule,
+} from "@angular/material/bottom-sheet";
+import { MatButtonModule } from "@angular/material/button";
+import { MatCardModule } from "@angular/material/card";
+import { MatDialog, MatDialogModule } from "@angular/material/dialog";
+import { MatIconModule } from "@angular/material/icon";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { Router } from "@angular/router";
 
-import { Statement } from '../../models/statement.model';
-import { Opinion } from '../../models/opinion.model';
-import { ElectionDataService } from '../../services/election-data.service';
-import { VotingStateService } from '../../services/voting-state.service';
-import { HelpComponent } from '../dialogs/help/help.component';
-import { StatementExplanationComponent } from '../dialogs/statement-explanation/statement-explanation.component';
+import { Statement } from "../../models/statement.model";
+import { Opinion } from "../../models/opinion.model";
+import { ElectionDataService } from "../../services/election-data.service";
+import { VotingStateService } from "../../services/voting-state.service";
+import { HelpComponent } from "../dialogs/help/help.component";
+import { StatementExplanationComponent } from "../dialogs/statement-explanation/statement-explanation.component";
 
 @Component({
-  selector: 'app-voting',
+  selector: "app-voting",
   imports: [
     MatCardModule,
     MatButtonModule,
@@ -32,8 +35,8 @@ import { StatementExplanationComponent } from '../dialogs/statement-explanation/
     MatBadgeModule,
     MatBottomSheetModule,
   ],
-  templateUrl: './voting.component.html',
-  styleUrl: './voting.component.sass',
+  templateUrl: "./voting.component.html",
+  styleUrl: "./voting.component.sass",
 })
 export class VotingComponent implements OnInit {
   private readonly router = inject(Router);
@@ -48,7 +51,7 @@ export class VotingComponent implements OnInit {
     const statement = this.statements[this.index()];
     return statement ? this.votingState.getWeight(statement.id) === 2 : false;
   });
-  public errorMessage = '';
+  public errorMessage = "";
   public dialog = inject(MatDialog);
 
   async ngOnInit(): Promise<void> {
@@ -59,16 +62,20 @@ export class VotingComponent implements OnInit {
       ]);
       this.statements = statements;
       const restoredId = this.votingState.currentStatementId();
-      const restoredIndex = restoredId === null
-        ? -1
-        : this.statements.findIndex(statement => statement.id === restoredId);
+      const restoredIndex =
+        restoredId === null
+          ? -1
+          : this.statements.findIndex(
+              (statement) => statement.id === restoredId,
+            );
       this.index.set(restoredIndex >= 0 ? restoredIndex : 0);
       if (restoredIndex < 0 && this.statements.length) {
         this.votingState.setCurrentStatement(this.statements[0].id);
       }
       window.scrollTo(0, 0);
     } catch {
-      this.errorMessage = 'Election data could not be loaded. Please return to the start page and try again.';
+      this.errorMessage =
+        "Election data could not be loaded. Please return to the start page and try again.";
     }
   }
 
@@ -78,7 +85,7 @@ export class VotingComponent implements OnInit {
     this.votingState.setCurrentStatement(statement.id);
     this.votingState.answer(statement.id, value);
     if (this.index() === this.statements.length - 1) {
-      this.router.navigate(['results']);
+      this.router.navigate(["results"]);
       return;
     }
     this.setIndex(this.index() + 1);
@@ -100,9 +107,9 @@ export class VotingComponent implements OnInit {
   openInfoDialog(statement: Statement): void {
     this.dialog.open(StatementExplanationComponent, {
       data: { explanation: statement.explanation },
-      width: 'min(92vw, 42rem)',
-      maxWidth: '92vw',
-      autoFocus: 'first-tabbable',
+      width: "min(92vw, 42rem)",
+      maxWidth: "92vw",
+      autoFocus: "first-tabbable",
       restoreFocus: true,
     });
   }
@@ -116,8 +123,8 @@ export class VotingComponent implements OnInit {
 
   openHelpBottomSheet(): void {
     this.bottomSheet.open(HelpComponent, {
-      ariaLabel: 'How Wahl-Navi works',
-      autoFocus: 'first-tabbable',
+      ariaLabel: "How Wahl-Navi works",
+      autoFocus: "first-tabbable",
     });
   }
 }

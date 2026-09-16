@@ -6,11 +6,15 @@
     "start": "ng serve",
     "data:export": "node scripts/run-importer.mjs",
     "data:check": "node scripts/run-importer.mjs --check",
+    "test:data": "node scripts/run-python-tests.mjs",
     "build:angular": "ng build --configuration production",
     "build": "node scripts/build-demo.mjs",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --watch=false --browsers=ChromeHeadless",
-    "check": "npm run data:check && npm test && npm run build"
+    "test": "ng test --watch=false --browsers=ChromeHeadlessNoGpu",
+    "lint": "eslint src --max-warnings=0",
+    "format": "prettier --write \"{src,tools,scripts,.github}/**/*.{ts,html,js,mjs,json,yml,yaml}\" \"*.{json,js,mjs,yml,yaml}\"",
+    "format:check": "prettier --check \"{src,tools,scripts,.github}/**/*.{ts,html,js,mjs,json,yml,yaml}\" \"*.{json,js,mjs,yml,yaml}\"",
+    "check": "npm run test:data && npm run data:check && npm run format:check && npm run lint && npm test && npm run build"
   },
   "private": true,
   "dependencies": {
@@ -33,13 +37,19 @@
     "@angular-devkit/build-angular": "^19.2.5",
     "@angular/cli": "^19.2.5",
     "@angular/compiler-cli": "^19.2.0",
+    "@eslint/js": "^9.39.1",
     "@types/jasmine": "~5.1.0",
+    "angular-eslint": "^19.8.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.7.2"
+    "prettier": "^3.9.7",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.70.0"
   }
 }

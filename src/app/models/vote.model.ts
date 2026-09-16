@@ -1,4 +1,4 @@
-import { Opinion } from './opinion.model';
+import { Opinion } from "./opinion.model";
 
 /** Represents a user's answer to a statement. */
 export interface Vote {

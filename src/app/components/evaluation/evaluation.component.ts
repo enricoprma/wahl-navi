@@ -1,30 +1,30 @@
-import { Component, inject } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router } from '@angular/router';
+import { Component, inject } from "@angular/core";
+import { MatButtonModule } from "@angular/material/button";
+import { MatCardModule } from "@angular/material/card";
+import { MatGridListModule } from "@angular/material/grid-list";
+import { MatIconModule } from "@angular/material/icon";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { Router } from "@angular/router";
 
-import { AgreementResult } from '../../models/agreement-result.model';
-import { Opinion } from '../../models/opinion.model';
-import { Party } from '../../models/party.model';
-import { Position } from '../../models/position.model';
-import { Statement } from '../../models/statement.model';
-import { Vote } from '../../models/vote.model';
-import { ElectionDataService } from '../../services/election-data.service';
-import { MatchingService } from '../../services/matching.service';
-import { PartyService } from '../../services/party.service';
-import { VotingStateService } from '../../services/voting-state.service';
-import { AgreementComponent } from '../agreement/agreement.component';
-import { OverviewComponent } from '../overview/overview.component';
+import { AgreementResult } from "../../models/agreement-result.model";
+import { Opinion } from "../../models/opinion.model";
+import { Party } from "../../models/party.model";
+import { Position } from "../../models/position.model";
+import { Statement } from "../../models/statement.model";
+import { Vote } from "../../models/vote.model";
+import { ElectionDataService } from "../../services/election-data.service";
+import { MatchingService } from "../../services/matching.service";
+import { PartyService } from "../../services/party.service";
+import { VotingStateService } from "../../services/voting-state.service";
+import { AgreementComponent } from "../agreement/agreement.component";
+import { OverviewComponent } from "../overview/overview.component";
 
 @Component({
-  selector: 'app-evaluation',
-  templateUrl: './evaluation.component.html',
-  styleUrl: './evaluation.component.sass',
+  selector: "app-evaluation",
+  templateUrl: "./evaluation.component.html",
+  styleUrl: "./evaluation.component.sass",
   imports: [
     MatGridListModule,
     MatMenuModule,
@@ -49,8 +49,8 @@ export class EvaluationComponent {
   public statements: Statement[] = [];
   public readonly votes = this.votingState.votes;
   public agreements: AgreementResult[] = [];
-  public location = '';
-  public errorMessage = '';
+  public location = "";
+  public errorMessage = "";
 
   async ngOnInit(): Promise<void> {
     try {
@@ -64,7 +64,7 @@ export class EvaluationComponent {
 
       // Initialization may be retried here after a transient failure in the guard.
       if (!this.votingState.hasProgress()) {
-        await this.router.navigate(['/']);
+        await this.router.navigate(["/"]);
         return;
       }
 
@@ -75,7 +75,8 @@ export class EvaluationComponent {
 
       this.calculateAndSortAgreements();
     } catch {
-      this.errorMessage = 'Election data could not be loaded. Please try again later.';
+      this.errorMessage =
+        "Election data could not be loaded. Please try again later.";
     }
   }
 

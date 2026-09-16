@@ -1,22 +1,31 @@
-import { Component, inject, Input, OnChanges, OnDestroy, OnInit, signal, SimpleChanges } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import {
+  Component,
+  inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  signal,
+  SimpleChanges,
+} from "@angular/core";
+import { MatButtonModule } from "@angular/material/button";
+import { MatCardModule } from "@angular/material/card";
+import { MatDialog, MatDialogModule } from "@angular/material/dialog";
+import { MatIconModule } from "@angular/material/icon";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
-import { AgreementResult } from '../../models/agreement-result.model';
-import { Party } from '../../models/party.model';
-import { Position } from '../../models/position.model';
-import { Statement } from '../../models/statement.model';
-import { Vote } from '../../models/vote.model';
-import { ElectionDataService } from '../../services/election-data.service';
-import { PartyService } from '../../services/party.service';
-import { PartyPositionComponent } from '../dialogs/party-position/party-position.component';
+import { AgreementResult } from "../../models/agreement-result.model";
+import { Party } from "../../models/party.model";
+import { Position } from "../../models/position.model";
+import { Statement } from "../../models/statement.model";
+import { Vote } from "../../models/vote.model";
+import { ElectionDataService } from "../../services/election-data.service";
+import { PartyService } from "../../services/party.service";
+import { PartyPositionComponent } from "../dialogs/party-position/party-position.component";
 
 @Component({
-  selector: 'app-agreement',
+  selector: "app-agreement",
   imports: [
     MatCardModule,
     MatProgressBarModule,
@@ -25,8 +34,8 @@ import { PartyPositionComponent } from '../dialogs/party-position/party-position
     MatTooltipModule,
     MatDialogModule,
   ],
-  templateUrl: './agreement.component.html',
-  styleUrl: './agreement.component.sass',
+  templateUrl: "./agreement.component.html",
+  styleUrl: "./agreement.component.sass",
 })
 export class AgreementComponent implements OnInit, OnChanges, OnDestroy {
   private readonly dataService = inject(ElectionDataService);
@@ -45,7 +54,7 @@ export class AgreementComponent implements OnInit, OnChanges, OnDestroy {
   public displayPercent = signal(0);
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['agreement'] && !changes['agreement'].firstChange) {
+    if (changes["agreement"] && !changes["agreement"].firstChange) {
       this.animateTo(this.agreement.percent);
     }
   }
@@ -58,7 +67,7 @@ export class AgreementComponent implements OnInit, OnChanges, OnDestroy {
     if (this.destroyed) return;
     this.positions = positions;
     this.statementsById = new Map(
-      statements.map(statement => [statement.id, statement]),
+      statements.map((statement) => [statement.id, statement]),
     );
 
     this.animateTo(this.agreement.percent);
@@ -75,7 +84,7 @@ export class AgreementComponent implements OnInit, OnChanges, OnDestroy {
     const increment = targetValue / 25;
     this.animationTimer = setInterval(() => {
       if (this.displayPercent() < targetValue) {
-        this.displayPercent.update(value => value + increment);
+        this.displayPercent.update((value) => value + increment);
       } else {
         this.animationEnded.set(true);
         this.displayPercent.set(targetValue);
@@ -98,7 +107,7 @@ export class AgreementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getVote(statementId: number): Vote | undefined {
-    return this.votes.find(vote => vote.statementId === statementId);
+    return this.votes.find((vote) => vote.statementId === statementId);
   }
 
   toggleExpanded(): void {
@@ -111,9 +120,9 @@ export class AgreementComponent implements OnInit, OnChanges, OnDestroy {
     party: Party,
   ): void {
     this.dialog.open(PartyPositionComponent, {
-      width: 'min(92vw, 42rem)',
-      maxWidth: '92vw',
-      autoFocus: 'first-tabbable',
+      width: "min(92vw, 42rem)",
+      maxWidth: "92vw",
+      autoFocus: "first-tabbable",
       ariaLabel: `${party.name} position`,
       restoreFocus: true,
       data: {
