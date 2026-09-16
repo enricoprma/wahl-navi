@@ -33,3 +33,7 @@ __pycache__/
 !/.vscode/extensions.json
 .DS_Store
 Thumbs.db
+
+# Generated election assets
+/public/data/
+/public/logos/parties/

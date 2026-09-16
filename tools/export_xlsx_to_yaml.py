@@ -16,6 +16,7 @@ import yaml
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT_DIRECTORY = REPOSITORY_ROOT / "public" / "data"
+DEFAULT_LOGO_OUTPUT_DIRECTORY = REPOSITORY_ROOT / "public" / "logos" / "parties"
 
 REQUIRED_SHEETS = ("Metadata", "Statements", "Positions", "Parties")
 REQUIRED_METADATA_KEYS = (
@@ -59,13 +60,26 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Validate the workbook without writing YAML files.",
+        help="Validate the workbook and logos without writing files.",
     )
     parser.add_argument(
         "--verbose",
         action="store_true",
         help="Print workbook and export details.",
     )
+    parser.add_argument(
+        "--logos",
+        type=Path,
+        required=True,
+        help="Directory containing one <party-id>.svg file per party.",
+    )
+    parser.add_argument(
+        "--logos-output",
+        type=Path,
+        default=DEFAULT_LOGO_OUTPUT_DIRECTORY,
+        help="Directory for generated party logos.",
+    )
+
     return parser.parse_args(argv)
 
 
@@ -451,7 +465,9 @@ def _record_count(export_data: dict[str, Any], file_name: str) -> int:
 def _print_verbose_summary(
     workbook_path: Path,
     output_directory: Path,
+    logo_output_directory: Path,
     export_data: dict[str, Any],
+    logos: dict[str, bytes],
     *,
     check_only: bool,
 ) -> None:
@@ -490,26 +506,117 @@ def _print_verbose_summary(
     )
     print(f"Converted Markdown links: {converted_links}")
     if check_only:
-        print("Mode: check only (no YAML files written)")
+        print("Mode: check only (no files written)")
     else:
         print("Mode: export")
-        print(f"Output directory: {output_directory}")
-        print(f"Output files: {', '.join(export_data)}")
+        print(f"Workbook output directory: {output_directory}")
+        print(f"Workbook output files: {', '.join(export_data)}")
+        print(f"Logo output directory: {logo_output_directory}")
+        print(f"Logos: {', '.join(logos)}")
+
+def load_party_logos(
+    parties: list[dict[str, Any]],
+    source_directory: Path,
+) -> dict[str, bytes]:
+    """Validate exact filenames and read all required logos before export."""
+    try:
+        if not source_directory.is_dir():
+            raise ImporterError(
+                f"Logo directory does not exist: {source_directory}"
+            )
+
+        # Enumerating names makes this case-sensitive even on Windows.
+        available = {
+            path.name: path
+            for path in source_directory.iterdir()
+            if path.is_file()
+        }
+
+        logos: dict[str, bytes] = {}
+        for party in parties:
+            file_name = f"{party['id']}.svg"
+            source = available.get(file_name)
+
+            if source is None:
+                raise ImporterError(
+                    f"Party '{party['id']}': missing logo "
+                    f"'{source_directory / file_name}'. "
+                    "The filename must match the party ID exactly, "
+                    "including case."
+                )
+
+            content = source.read_bytes()
+            if not content.strip():
+                raise ImporterError(
+                    f"Party '{party['id']}': logo is empty: {source}"
+                )
+
+            logos[file_name] = content
+
+        return logos
+    except OSError as error:
+        raise ImporterError(
+            f"Could not read party logos: {error}"
+        ) from error
+
+
+def write_party_logos(
+    logos: dict[str, bytes],
+    output_directory: Path,
+) -> None:
+    """Write required SVGs and remove obsolete generated SVGs."""
+    try:
+        output_directory.mkdir(parents=True, exist_ok=True)
+
+        for file_name, content in logos.items():
+            destination = output_directory / file_name
+            temporary = destination.with_suffix(".svg.tmp")
+            temporary.write_bytes(content)
+            temporary.replace(destination)
+
+        for existing in output_directory.iterdir():
+            if (
+                existing.is_file()
+                and existing.suffix.lower() == ".svg"
+                and existing.name not in logos
+            ):
+                existing.unlink()
+    except OSError as error:
+        raise ImporterError(
+            f"Could not write party logos to '{output_directory}': {error}"
+        ) from error
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     """Run the importer CLI and return a process exit code."""
     args = parse_args(argv)
+
     workbook_path = args.workbook.expanduser().resolve()
     output_directory = args.output.expanduser().resolve()
 
+    logo_directory = args.logos.expanduser().resolve()
+    logo_output_directory = args.logos_output.expanduser().resolve()
+
     try:
+        for destination in (output_directory, logo_output_directory):
+            if (
+                logo_directory == destination
+                or logo_directory in destination.parents
+                or destination in logo_directory.parents
+            ):
+                raise ImporterError(
+                    "The source logo directory and generated output directories "
+                    "must be separate and must not contain each other."
+                )
+    
         workbook_data = load_workbook_data(workbook_path)
         export_data = build_export_data(workbook_data)
+        logos = load_party_logos(export_data["parties.yaml"], logo_directory)
         counts = (
             f"{_record_count(export_data, 'statements.yaml')} statements, "
             f"{_record_count(export_data, 'parties.yaml')} parties, "
-            f"{_record_count(export_data, 'positions.yaml')} positions"
+            f"{_record_count(export_data, 'positions.yaml')} positions, "
+            f"{len(logos)} logos"
         )
 
         if args.check:
@@ -517,7 +624,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 _print_verbose_summary(
                     workbook_path,
                     output_directory,
+                    logo_output_directory,
                     export_data,
+                    logos,
                     check_only=True,
                 )
                 print("Validation succeeded.")
@@ -525,16 +634,19 @@ def main(argv: Sequence[str] | None = None) -> int:
                 print(f"Validation succeeded: {counts}.")
         else:
             write_yaml_files(export_data, output_directory)
+            write_party_logos(logos, logo_output_directory)
             if args.verbose:
                 _print_verbose_summary(
                     workbook_path,
                     output_directory,
+                    logo_output_directory,
                     export_data,
+                    logos,
                     check_only=False,
                 )
-                print("Exported 4 YAML files.")
+                print(f"Exported 4 YAML files and {len(logos)} party logos.")
             else:
-                print(f"Exported 4 YAML files to {output_directory}.")
+                print(f"Exported 4 YAML files and {len(logos)} party logos.")
         return 0
     except ImporterError as error:
         print(f"Error: {error}", file=sys.stderr)
