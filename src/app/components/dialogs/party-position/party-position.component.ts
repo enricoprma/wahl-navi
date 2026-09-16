@@ -14,7 +14,7 @@ interface PartyPositionDialogData {
   statement: Statement;
   party: Party;
   position: Position;
-  vote: Vote;
+  vote?: Vote;
 }
 
 @Component({

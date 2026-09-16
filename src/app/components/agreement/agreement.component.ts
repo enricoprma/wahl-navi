@@ -33,6 +33,7 @@ export class AgreementComponent implements OnInit, OnChanges, OnDestroy {
   private readonly partyService = inject(PartyService);
   private readonly dialog = inject(MatDialog);
   private animationTimer?: ReturnType<typeof setInterval>;
+  private destroyed = false;
 
   @Input({ required: true }) votes!: Vote[];
   @Input({ required: true }) agreement!: AgreementResult;
@@ -54,6 +55,7 @@ export class AgreementComponent implements OnInit, OnChanges, OnDestroy {
       this.partyService.getPartyPositions(this.agreement.party.id),
       this.dataService.getStatements(),
     ]);
+    if (this.destroyed) return;
     this.positions = positions;
     this.statementsById = new Map(
       statements.map(statement => [statement.id, statement]),
@@ -83,6 +85,7 @@ export class AgreementComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.clearAnimationTimer();
   }
 
@@ -112,11 +115,7 @@ export class AgreementComponent implements OnInit, OnChanges, OnDestroy {
         position,
         statement,
         party,
-        vote: this.getVote(position.statementId) ?? {
-          statementId: position.statementId,
-          value: null,
-          weight: 1,
-        },
+        vote: this.getVote(position.statementId),
       },
     });
   }

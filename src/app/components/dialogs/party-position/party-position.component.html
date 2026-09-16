@@ -23,6 +23,9 @@
     </div>
     <div class="d-flex flex-row gap-3">
       <p class="mb-0">Your answer:</p>
+      @if (!vote || vote.value === null) {
+        <mat-icon matTooltip="No answer">radio_button_unchecked</mat-icon>
+      } @else {
       @switch (vote.value) {
         @case (-1) {
           <mat-icon matTooltip="Disagree" style="color: red">cancel</mat-icon>
@@ -33,12 +36,10 @@
         @case (1) {
           <mat-icon matTooltip="Agree" style="color: green">check_circle</mat-icon>
         }
-        @case (null) {
-          <mat-icon matTooltip="Skipped">radio_button_unchecked</mat-icon>
-        }
+      }
       }
     </div>
-    @if (vote.weight === 2) {
+    @if (vote?.weight === 2) {
       <p class="mb-0 small-p"><i>You gave this statement double weight.</i></p>
     }
     <hr />

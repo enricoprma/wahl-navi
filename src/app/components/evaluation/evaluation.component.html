@@ -44,7 +44,13 @@
             <div class="d-flex flex-row align-items-center gap-3">
               <div class="d-flex flex-row gap-1 align-items-center">
                 <p class="mb-0 mobile">Your answer:</p>
-                @switch (getVote(statement.id).value) {
+                @let vote = getVote(statement.id);
+                @if (!vote || vote.value === null) {
+                  <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Change answer">
+                    <mat-icon>radio_button_unchecked</mat-icon>
+                  </button>
+                } @else {
+                @switch (vote.value) {
                   @case (-1) {
                     <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Change answer">
                       <mat-icon style="color: red">cancel</mat-icon>
@@ -60,11 +66,7 @@
                       <mat-icon style="color: green">check_circle</mat-icon>
                     </button>
                   }
-                  @case (null) {
-                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Change answer">
-                      <mat-icon>radio_button_unchecked</mat-icon>
-                    </button>
-                  }
+                }
                 }
                 <mat-menu #voteMenu="matMenu">
                   <div class="d-flex flex-column align-items-start gap-2 m-2">
@@ -91,7 +93,7 @@
               <div class="d-flex flex-row gap-1 align-items-center">
                 <p class="mb-0 mobile">Weight:</p>
                 <button class="d-flex" mat-icon-button [matMenuTriggerFor]="weightMenu" matTooltip="Change weight">
-                  <mat-icon>{{ getVote(statement.id).weight === 2 ? 'speed_2x' : '1x_mobiledata' }}</mat-icon>
+                  <mat-icon>{{ getWeight(statement.id) === 2 ? 'speed_2x' : '1x_mobiledata' }}</mat-icon>
                 </button>
               </div>
               <mat-menu #weightMenu="matMenu">

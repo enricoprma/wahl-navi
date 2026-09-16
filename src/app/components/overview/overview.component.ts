@@ -22,7 +22,7 @@ export class OverviewComponent implements OnInit {
   private readonly partyService = inject(PartyService);
 
   @Input({ required: true }) statement!: Statement;
-  @Input({ required: true }) vote!: Vote;
+  @Input({ required: true }) vote: Vote | undefined;
   @Input({ required: true }) parties!: Party[];
 
   public expanded = false;

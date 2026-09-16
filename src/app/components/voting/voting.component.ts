@@ -75,6 +75,7 @@ export class VotingComponent implements OnInit {
   vote(value: Opinion | null): void {
     const statement = this.statements[this.index()];
     if (!statement) return;
+    this.votingState.setCurrentStatement(statement.id);
     this.votingState.answer(statement.id, value);
     if (this.index() === this.statements.length - 1) {
       this.router.navigate(['results']);

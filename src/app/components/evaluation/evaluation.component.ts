@@ -62,6 +62,12 @@ export class EvaluationComponent {
         this.votingState.initialize(),
       ]);
 
+      // Initialization may be retried here after a transient failure in the guard.
+      if (!this.votingState.hasProgress()) {
+        await this.router.navigate(['/']);
+        return;
+      }
+
       this.location = metadata.location;
       this.parties = parties;
       this.positions = positions;
@@ -85,14 +91,12 @@ export class EvaluationComponent {
     this.calculateAndSortAgreements();
   }
 
-  getVote(statementId: number): Vote {
-    return (
-      this.votes().find(vote => vote?.statementId === statementId) ?? {
-        statementId,
-        value: null,
-        weight: 1,
-      }
-    );
+  getVote(statementId: number): Vote | undefined {
+    return this.votingState.getVote(statementId);
+  }
+
+  getWeight(statementId: number): 1 | 2 {
+    return this.votingState.getWeight(statementId);
   }
 
   calculateAndSortAgreements(): void {

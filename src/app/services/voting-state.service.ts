@@ -5,14 +5,15 @@ import { Vote } from '../models/vote.model';
 import { ElectionDataService } from './election-data.service';
 
 export const VOTING_STATE_STORAGE_KEY = 'wahl-navi.voting-state';
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 /** The versioned state persisted for the currently loaded election dataset. */
 export interface PersistedVotingState {
-  schemaVersion: 1;
+  schemaVersion: 2;
   datasetId: string;
   currentStatementId: number | null;
   votes: Vote[];
+  draftWeights: { statementId: number; weight: 1 | 2 }[];
   updatedAt: string;
 }
 
@@ -20,7 +21,6 @@ export interface PersistedVotingState {
 @Injectable({ providedIn: 'root' })
 export class VotingStateService {
   private readonly state = signal<PersistedVotingState | null>(null);
-  private readonly draftWeights = signal(new Map<number, 1 | 2>());
   private initialization?: Promise<void>;
   private statementIds: number[] = [];
   private statementIdSet = new Set<number>();
@@ -50,9 +50,12 @@ export class VotingStateService {
     return this.initialization;
   }
 
-  /** A skip is meaningful progress, while merely opening the questionnaire is not. */
+  /** Answers (including skips), a later position, or a draft double weight are progress. */
   hasProgress(): boolean {
-    return this.votes().length > 0;
+    const current = this.currentStatementId();
+    return this.votes().length > 0
+      || (current !== null && current !== this.statementIds[0])
+      || (this.state()?.draftWeights.some(draft => draft.weight === 2) ?? false);
   }
 
   getVote(statementId: number): Vote | undefined {
@@ -60,7 +63,9 @@ export class VotingStateService {
   }
 
   getWeight(statementId: number): 1 | 2 {
-    return this.getVote(statementId)?.weight ?? this.draftWeights().get(statementId) ?? 1;
+    return this.getVote(statementId)?.weight
+      ?? this.state()?.draftWeights.find(draft => draft.statementId === statementId)?.weight
+      ?? 1;
   }
 
   setCurrentStatement(statementId: number): void {
@@ -88,12 +93,10 @@ export class VotingStateService {
     const nextVotes = previous === -1
       ? [...votes, vote]
       : votes.map((existing, index) => index === previous ? vote : existing);
-    this.draftWeights.update(weights => {
-      const next = new Map(weights);
-      next.delete(statementId);
-      return next;
+    this.updateState({
+      votes: nextVotes,
+      draftWeights: this.state()!.draftWeights.filter(draft => draft.statementId !== statementId),
     });
-    this.updateState({ votes: nextVotes, currentStatementId: statementId });
   }
 
   /** Changes a saved vote's weight, or prepares a weight for a future answer. */
@@ -101,7 +104,10 @@ export class VotingStateService {
     if (!this.statementIdSet.has(statementId)) return;
     const vote = this.getVote(statementId);
     if (!vote) {
-      this.draftWeights.update(weights => new Map(weights).set(statementId, weight));
+      const drafts = this.state()!.draftWeights.filter(draft => draft.statementId !== statementId);
+      this.updateState({
+        draftWeights: weight === 2 ? [...drafts, { statementId, weight }] : drafts,
+      });
       return;
     }
     this.updateState({
@@ -117,7 +123,6 @@ export class VotingStateService {
 
   /** Clears only Wahl-Navi's own persisted state and keeps legacy keys untouched. */
   reset(): void {
-    this.draftWeights.set(new Map());
     this.state.set(this.createState(null, []));
     try {
       localStorage.removeItem(VOTING_STATE_STORAGE_KEY);
@@ -126,7 +131,7 @@ export class VotingStateService {
     }
   }
 
-  private updateState(change: Partial<Pick<PersistedVotingState, 'currentStatementId' | 'votes'>>): void {
+  private updateState(change: Partial<Pick<PersistedVotingState, 'currentStatementId' | 'votes' | 'draftWeights'>>): void {
     const current = this.state() ?? this.createState(null, []);
     const next: PersistedVotingState = {
       ...current,
@@ -143,6 +148,7 @@ export class VotingStateService {
       datasetId: this.datasetId,
       currentStatementId,
       votes,
+      draftWeights: [],
       updatedAt: new Date().toISOString(),
     };
   }
@@ -152,7 +158,13 @@ export class VotingStateService {
       const raw = localStorage.getItem(VOTING_STATE_STORAGE_KEY);
       if (!raw) return undefined;
       const parsed: unknown = JSON.parse(raw);
-      return this.isValidStoredState(parsed) ? parsed : undefined;
+      // Version 1 had no persisted draft weights. Validate its migrated form
+      // before restoring, and write version 2 on the next user change.
+      const candidate = parsed && typeof parsed === 'object' && 'schemaVersion' in parsed
+        && parsed.schemaVersion === 1
+        ? { ...parsed, schemaVersion: SCHEMA_VERSION, draftWeights: [] }
+        : parsed;
+      return this.isValidStoredState(candidate) ? candidate : undefined;
     } catch {
       return undefined;
     }
@@ -175,13 +187,20 @@ export class VotingStateService {
     if (!Array.isArray(candidate.votes)) return false;
 
     const seen = new Set<number>();
-    return candidate.votes.every(vote => {
+    const validVotes = candidate.votes.every(vote => {
       if (!vote || typeof vote !== 'object') return false;
       const item = vote as Vote;
       if (!this.statementIdSet.has(item.statementId) || seen.has(item.statementId)) return false;
       seen.add(item.statementId);
       return (item.value === -1 || item.value === 0 || item.value === 1 || item.value === null)
         && (item.weight === 1 || item.weight === 2);
+    });
+    if (!validVotes || !Array.isArray(candidate.draftWeights)) return false;
+    return candidate.draftWeights.every(draft => {
+      if (!draft || typeof draft !== 'object') return false;
+      if (!this.statementIdSet.has(draft.statementId) || seen.has(draft.statementId)) return false;
+      seen.add(draft.statementId);
+      return draft.weight === 1 || draft.weight === 2;
     });
   }
 }

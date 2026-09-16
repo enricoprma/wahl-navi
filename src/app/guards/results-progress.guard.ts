@@ -11,6 +11,8 @@ export const resultsProgressGuard: CanActivateFn = async () => {
     await votingState.initialize();
     return votingState.hasProgress() || router.createUrlTree(['/']);
   } catch {
-    return router.createUrlTree(['/']);
+    // Let EvaluationComponent report a data-load failure instead of treating it
+    // as an empty or invalid voting session.
+    return true;
   }
 };

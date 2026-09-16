@@ -19,6 +19,9 @@
         <tr>
           <td class="pe-3 pb-4"><b>You:</b></td>
           <td class="d-flex justify-content-center pb-4">
+            @if (!vote || vote.value === null) {
+              <mat-icon matTooltip="No answer">radio_button_unchecked</mat-icon>
+            } @else {
             @switch (vote.value) {
               @case (-1) {
                 <mat-icon matTooltip="Disagree" style="color: red">cancel</mat-icon>
@@ -29,9 +32,7 @@
               @case (1) {
                 <mat-icon matTooltip="Agree" style="color: green">check_circle</mat-icon>
               }
-              @case (null) {
-                <mat-icon matTooltip="Skipped">radio_button_unchecked</mat-icon>
-              }
+            }
             }
           </td>
         </tr>

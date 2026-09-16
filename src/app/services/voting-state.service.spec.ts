@@ -1,106 +1,135 @@
-import { TestBed } from '@angular/core/testing';
-
+import { electionDataStub, mockVotingStorage, savedState } from '../testing/voting-fixtures';
 import { ElectionDataService } from './election-data.service';
-import {
-  PersistedVotingState,
-  VOTING_STATE_STORAGE_KEY,
-  VotingStateService,
-} from './voting-state.service';
+import { VOTING_STATE_STORAGE_KEY as KEY, VotingStateService } from './voting-state.service';
 
 describe('VotingStateService', () => {
   let service: VotingStateService;
-  const dataService = {
-    getMetadata: jasmine.createSpy('getMetadata'),
-    getStatements: jasmine.createSpy('getStatements'),
-  };
-
-  const validState = (overrides: Partial<PersistedVotingState> = {}): PersistedVotingState => ({
-    schemaVersion: 1,
-    datasetId: 'exampleton-2026-v1',
-    currentStatementId: 10,
-    votes: [{ statementId: 10, value: 1, weight: 2 }],
-    updatedAt: '2026-01-01T00:00:00.000Z',
-    ...overrides,
-  });
+  let data: jasmine.SpyObj<ElectionDataService>;
+  let storage: Map<string, string>;
 
   beforeEach(() => {
-    localStorage.clear();
-    dataService.getMetadata.calls.reset();
-    dataService.getStatements.calls.reset();
-    dataService.getMetadata.and.resolveTo({ datasetId: 'exampleton-2026-v1' });
-    dataService.getStatements.and.resolveTo([
-      { id: 10, text: 'First', explanation: null, keywords: 'first' },
-      { id: 42, text: 'Second', explanation: null, keywords: 'second' },
-    ]);
-    TestBed.configureTestingModule({
-      providers: [
-        VotingStateService,
-        { provide: ElectionDataService, useValue: dataService },
-      ],
-    });
-    service = TestBed.inject(VotingStateService);
+    storage = mockVotingStorage();
+    data = electionDataStub();
+    service = new VotingStateService(data);
   });
 
-  it('restores namespaced votes, weights, and the first statement ID without an initial save', async () => {
-    const stored = validState({ currentStatementId: 10 });
-    localStorage.setItem(VOTING_STATE_STORAGE_KEY, JSON.stringify(stored));
-
+  it('restores the first statement, answers and weights without an initial save', async () => {
+    const stored = savedState({ votes: [{ statementId: 10, value: 1, weight: 2 }] });
+    storage.set(KEY, JSON.stringify(stored));
     await service.initialize();
-
     expect(service.currentStatementId()).toBe(10);
     expect(service.votes()).toEqual(stored.votes);
-    expect(localStorage.getItem(VOTING_STATE_STORAGE_KEY)).toBe(JSON.stringify(stored));
+    expect(Storage.prototype.setItem).not.toHaveBeenCalled();
   });
 
-  it('persists answers and weights by non-contiguous statement ID', async () => {
+  it('migrates valid version-1 progress without losing answers or the resume position', async () => {
+    const { draftWeights, ...oldState } = savedState({
+      currentStatementId: 42, votes: [{ statementId: 10, value: null, weight: 2 }],
+    });
+    storage.set(KEY, JSON.stringify({ ...oldState, schemaVersion: 1 }));
+    await service.initialize();
+    expect(service.currentStatementId()).toBe(42);
+    expect(service.votes()).toEqual(oldState.votes);
+    service.setWeight(42, 2);
+    expect(JSON.parse(storage.get(KEY)!).schemaVersion).toBe(2);
+    const restored = new VotingStateService(data);
+    await restored.initialize();
+    expect(restored.votes()).toEqual(oldState.votes);
+    expect(restored.getWeight(42)).toBe(2);
+  });
+
+  it('persists draft weights, restores them, and consumes them only when answered', async () => {
     await service.initialize();
     service.setCurrentStatement(42);
     service.toggleWeight(42);
     expect(service.votes()).toEqual([]);
+    const restored = new VotingStateService(data);
+    await restored.initialize();
+    expect(restored.currentStatementId()).toBe(42);
+    expect(restored.getWeight(42)).toBe(2);
+    restored.answer(42, null);
+    expect(restored.votes()).toEqual([{ statementId: 42, value: null, weight: 2 }]);
+    expect(JSON.parse(storage.get(KEY)!).draftWeights).toEqual([]);
+  });
 
-    service.answer(42, null);
-    service.setWeight(42, 1);
-
-    expect(service.votes()).toEqual([{ statementId: 42, value: null, weight: 1 }]);
-    expect(JSON.parse(localStorage.getItem(VOTING_STATE_STORAGE_KEY) ?? '').votes).toEqual(service.votes());
+  it('counts later navigation, draft double weights, and explicit skips as progress', async () => {
+    await service.initialize();
+    expect(service.hasProgress()).toBeFalse();
+    service.setCurrentStatement(10);
+    expect(service.hasProgress()).toBeFalse();
+    service.navigate(1);
+    expect(service.currentStatementId()).toBe(42);
+    expect(service.hasProgress()).toBeTrue();
+    service.navigate(-1);
+    expect(service.hasProgress()).toBeFalse();
+    service.toggleWeight(10);
+    expect(service.hasProgress()).toBeTrue();
+    service.toggleWeight(10);
+    expect(service.hasProgress()).toBeFalse();
+    service.answer(10, null);
     expect(service.hasProgress()).toBeTrue();
   });
 
-  it('rejects corrupt, incompatible, mismatched, and invalid persisted state', async () => {
-    localStorage.setItem(VOTING_STATE_STORAGE_KEY, '{not json');
+  it('changes answers and weights without moving the saved resume position', async () => {
     await service.initialize();
-    expect(service.hasProgress()).toBeFalse();
-
-    TestBed.resetTestingModule();
-    localStorage.setItem(VOTING_STATE_STORAGE_KEY, JSON.stringify(validState({ schemaVersion: 2 as 1 })));
-    TestBed.configureTestingModule({ providers: [VotingStateService, { provide: ElectionDataService, useValue: dataService }] });
-    service = TestBed.inject(VotingStateService);
-    await service.initialize();
-    expect(service.hasProgress()).toBeFalse();
+    service.setCurrentStatement(99);
+    service.answer(10, 1);
+    service.setWeight(10, 2);
+    service.answer(10, -1);
+    expect(service.currentStatementId()).toBe(99);
+    expect(JSON.parse(storage.get(KEY)!).currentStatementId).toBe(99);
   });
 
-  it('keeps legacy and unrelated keys when reset removes only the namespaced record', async () => {
-    localStorage.setItem('votes', 'legacy votes');
-    localStorage.setItem('index', 'legacy index');
-    localStorage.setItem('other-app', 'keep me');
+  const invalidRecords: [string, () => string][] = [
+    ['corrupt JSON', () => '{not json'],
+    ['unsupported schema', () => JSON.stringify({ ...savedState(), schemaVersion: 3 })],
+    ['mismatched dataset', () => JSON.stringify(savedState({ datasetId: 'other' }))],
+    ['unknown current statement', () => JSON.stringify(savedState({ currentStatementId: 100 }))],
+    ['invalid timestamp', () => JSON.stringify(savedState({ updatedAt: 'invalid' }))],
+    ['missing draft weights', () => JSON.stringify({ ...savedState(), draftWeights: undefined })],
+    ['invalid opinion', () => JSON.stringify({ ...savedState(), votes: [{ statementId: 10, value: 3, weight: 1 }] })],
+    ['invalid vote weight', () => JSON.stringify({ ...savedState(), votes: [{ statementId: 10, value: 1, weight: 3 }] })],
+    ['unknown vote ID', () => JSON.stringify(savedState({ votes: [{ statementId: 100, value: 1, weight: 1 }] }))],
+    ['duplicate votes', () => JSON.stringify(savedState({ votes: Array(2).fill({ statementId: 10, value: 1, weight: 1 }) }))],
+    ['invalid draft weight', () => JSON.stringify({ ...savedState(), draftWeights: [{ statementId: 42, weight: 3 }] })],
+    ['unknown draft ID', () => JSON.stringify(savedState({ draftWeights: [{ statementId: 100, weight: 2 }] }))],
+    ['duplicate drafts', () => JSON.stringify(savedState({ draftWeights: Array(2).fill({ statementId: 42, weight: 2 }) }))],
+    ['a draft overlapping a vote', () => JSON.stringify(savedState({ votes: [{ statementId: 10, value: 0, weight: 1 }], draftWeights: [{ statementId: 10, weight: 2 }] }))],
+  ];
+  for (const [name, record] of invalidRecords) {
+    it(`rejects ${name}`, async () => {
+      storage.set(KEY, record());
+      await service.initialize();
+      expect(service.hasProgress()).toBeFalse();
+      expect(service.votes()).toEqual([]);
+      expect(service.currentStatementId()).toBeNull();
+    });
+  }
+
+  it('removes only the namespaced record on reset, leaving legacy and unrelated keys untouched', async () => {
+    storage.set('votes', 'legacy votes');
+    storage.set('index', 'legacy index');
+    storage.set('other-app', 'keep me');
     await service.initialize();
     service.answer(10, -1);
-
+    service.setWeight(42, 2);
     service.reset();
-
-    expect(localStorage.getItem(VOTING_STATE_STORAGE_KEY)).toBeNull();
-    expect(localStorage.getItem('votes')).toBe('legacy votes');
-    expect(localStorage.getItem('index')).toBe('legacy index');
-    expect(localStorage.getItem('other-app')).toBe('keep me');
+    expect([...storage.entries()]).toEqual([
+      ['votes', 'legacy votes'], ['index', 'legacy index'], ['other-app', 'keep me'],
+    ]);
+    expect(service.hasProgress()).toBeFalse();
+    expect(service.getWeight(42)).toBe(1);
   });
 
-  it('continues in memory when storage is unavailable', async () => {
-    const setItem = spyOn(localStorage, 'setItem').and.throwError('disabled');
+  it('retains usable in-memory state when storage reads, writes and removal fail', async () => {
+    (Storage.prototype.getItem as jasmine.Spy).and.throwError('disabled');
+    (Storage.prototype.setItem as jasmine.Spy).and.throwError('disabled');
+    (Storage.prototype.removeItem as jasmine.Spy).and.throwError('disabled');
     await service.initialize();
-
+    service.setWeight(10, 2);
     service.answer(10, 0);
-
-    expect(service.votes()).toEqual([{ statementId: 10, value: 0, weight: 1 }]);
-    setItem.and.callThrough();
+    expect(service.votes()).toEqual([{ statementId: 10, value: 0, weight: 2 }]);
+    service.reset();
+    expect(service.hasProgress()).toBeFalse();
   });
 });
