@@ -1,13 +1,12 @@
-<div class="dialog-body">
-  <div class="px-3 pt-3 d-flex flex-row justify-content-end">
-    <button mat-icon-button aria-label="Close dialog" (click)="dialogRef.close()">
-      <mat-icon>cancel</mat-icon>
-    </button>
-  </div>
-  <div class="px-5 pb-5 d-flex flex-column gap-2">
-    <p class="mb-0">Statement {{ statement.id }}</p>
-    <h5 class="fw-bold">{{ statement.text }}</h5>
-    <div class="d-flex flex-row gap-3">
+<header class="dialog-header">
+  <button type="button" mat-icon-button cdkFocusInitial aria-label="Close party position" (click)="dialogRef.close()">
+    <mat-icon>cancel</mat-icon>
+  </button>
+</header>
+<mat-dialog-content class="dialog-content d-flex flex-column gap-2">
+    <p class="mb-0 text-secondary">Statement {{ statement.id }}</p>
+    <h3 class="h5 fw-bold">{{ statement.text }}</h3>
+    <div class="position-row d-flex flex-row flex-wrap align-items-center gap-2">
       <p class="mb-0">{{ party.name }}:</p>
       @switch (position.opinion) {
         @case (-1) {
@@ -20,11 +19,13 @@
           <mat-icon matTooltip="Agree" style="color: green">check_circle</mat-icon>
         }
       }
+      <span>{{ convertOpinionToString(position.opinion) }}</span>
     </div>
-    <div class="d-flex flex-row gap-3">
+    <div class="position-row d-flex flex-row flex-wrap align-items-center gap-2">
       <p class="mb-0">Your answer:</p>
       @if (!vote || vote.value === null) {
         <mat-icon matTooltip="No answer">radio_button_unchecked</mat-icon>
+        <span>No answer</span>
       } @else {
       @switch (vote.value) {
         @case (-1) {
@@ -37,16 +38,16 @@
           <mat-icon matTooltip="Agree" style="color: green">check_circle</mat-icon>
         }
       }
+      <span>{{ convertOpinionToString(vote.value) }}</span>
       }
     </div>
     @if (vote?.weight === 2) {
       <p class="mb-0 small-p"><i>You gave this statement double weight.</i></p>
     }
     <hr />
-    <h6 class="fw-bold">Party justification:</h6>
+    <h3 class="h6 fw-bold">Party justification</h3>
     <p
       class="mb-0"
       [innerHTML]="position.justification ? '“' + position.justification + '”' : 'The party did not provide a justification.'"
     ></p>
-  </div>
-</div>
+</mat-dialog-content>

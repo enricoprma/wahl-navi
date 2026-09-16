@@ -100,6 +100,10 @@ export class VotingComponent implements OnInit {
   openInfoDialog(statement: Statement): void {
     this.dialog.open(StatementExplanationComponent, {
       data: { explanation: statement.explanation },
+      width: 'min(92vw, 42rem)',
+      maxWidth: '92vw',
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
     });
   }
 
@@ -111,6 +115,9 @@ export class VotingComponent implements OnInit {
   }
 
   openHelpBottomSheet(): void {
-    this.bottomSheet.open(HelpComponent);
+    this.bottomSheet.open(HelpComponent, {
+      ariaLabel: 'How Wahl-Navi works',
+      autoFocus: 'first-tabbable',
+    });
   }
 }

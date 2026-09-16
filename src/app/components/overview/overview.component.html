@@ -1,21 +1,15 @@
-<div class="d-flex flex-column justify-content-between align-items-start gap-4">
-  <div class="d-flex flex-row gap-3 align-content-center justify-content-between w-100 mw-100">
+<div class="overview-item d-flex flex-row justify-content-between align-items-start gap-3">
+  <div class="overview-content d-flex flex-column align-items-start gap-4">
     <h4 class="m-0 desktop">{{ statement.text }}</h4>
-    <h4 class="m-0 mobile" (click)="toggleExpanded()">{{ statement.text }}</h4>
-    @if (!expanded) {
-      <button mat-mini-fab class="mx-5 desktop" aria-label="Expand statement" (click)="toggleExpanded()">
-        <mat-icon>keyboard_arrow_down</mat-icon>
+    <h4 class="m-0 mobile overview-heading">
+      <button mat-button class="overview-toggle" [attr.aria-expanded]="expanded" [attr.aria-controls]="'overview-details-' + statement.id" (click)="toggleExpanded()">
+        {{ statement.text }}
+        <mat-icon aria-hidden="true">{{ expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
       </button>
-    } @else {
-      <button mat-mini-fab class="mx-5 desktop" aria-label="Collapse statement" (click)="toggleExpanded()">
-        <mat-icon>keyboard_arrow_up</mat-icon>
-      </button>
-    }
-  </div>
-
-  @if (expanded) {
-    <div class="d-flex flex-row gap-5">
-      <table>
+    </h4>
+    @if (expanded) {
+      <div class="overview-details" [id]="'overview-details-' + statement.id">
+        <table>
         <tr>
           <td class="pe-3 pb-4"><b>You:</b></td>
           <td class="d-flex justify-content-center pb-4">
@@ -62,7 +56,18 @@
           </tr>
           }
         }
-      </table>
-    </div>
+        </table>
+      </div>
+    }
+  </div>
+
+  @if (!expanded) {
+    <button mat-mini-fab class="mx-5 desktop" aria-label="Expand statement" [attr.aria-expanded]="false" [attr.aria-controls]="'overview-details-' + statement.id" (click)="toggleExpanded()">
+      <mat-icon>keyboard_arrow_down</mat-icon>
+    </button>
+  } @else {
+    <button mat-mini-fab class="mx-5 desktop" aria-label="Collapse statement" [attr.aria-expanded]="true" [attr.aria-controls]="'overview-details-' + statement.id" (click)="toggleExpanded()">
+      <mat-icon>keyboard_arrow_up</mat-icon>
+    </button>
   }
 </div>

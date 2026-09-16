@@ -1,2 +1,36 @@
+:host
+  display: block
+  min-width: 0
+
+.agreement-heading, .party-identity, .party-name
+  min-width: 0
+
+.party-identity
+  flex: 0 1 auto
+
+  img
+    flex: 0 0 auto
+
+.party-name
+  overflow-wrap: anywhere
+
+.agreement-heading > button
+  flex: 0 0 auto
+
+.agreement-progress
+  display: grid
+  grid-template-columns: minmax(0, 1fr) 6rem
+  align-items: center
+  gap: 1rem
+  width: 100%
+
+  mat-progress-bar
+    width: 100%
+
+.agreement-percentage
+  margin: 0
+  text-align: right
+  white-space: nowrap
+
 td
   background-color: var(--mat-sys-surface) !important

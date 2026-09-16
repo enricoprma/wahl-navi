@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
+import { A11yModule } from '@angular/cdk/a11y';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -19,7 +20,7 @@ interface PartyPositionDialogData {
 
 @Component({
   selector: 'app-party-position',
-  imports: [MatIconModule, MatTooltipModule, MatButtonModule],
+  imports: [A11yModule, MatDialogModule, MatIconModule, MatTooltipModule, MatButtonModule],
   templateUrl: './party-position.component.html',
   styleUrl: './party-position.component.sass',
 })

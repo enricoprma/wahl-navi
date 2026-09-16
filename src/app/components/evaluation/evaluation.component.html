@@ -8,7 +8,7 @@
       <div class="desktop">Results</div>
     </ng-template>
     <ng-template matTabContent>
-      <div class="d-flex justify-content-start align align-items-center my-5">
+      <div class="d-flex justify-content-start align align-items-center my-5 px-2">
         <div class="dashboard-card">
           <h1 class="mb-3">Your Wahl-Navi {{ location }} results</h1>
           <p class="mb-5">
@@ -32,9 +32,12 @@
     </ng-template>
     <div class="d-flex flex-column justify-content-start align align-items-start my-5 w-100">
       <h1 class="mb-3">Adjust answers</h1>
-      <p class="mb-3">
+      <p class="mb-3 desktop">
         Change an answer or its weight using the controls on the right. Results
         update automatically.
+      </p>
+      <p class="mb-3 mobile">
+        Change an answer or its weight by clicking on your selected answer/weight icon.
       </p>
       <div class="d-flex flex-column gap-3 w-100">
         @for (statement of statements; track statement.id) {
@@ -46,66 +49,66 @@
                 <p class="mb-0 mobile">Your answer:</p>
                 @let vote = getVote(statement.id);
                 @if (!vote || vote.value === null) {
-                  <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Change answer">
+                  <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Current answer: No answer. Change answer" aria-label="Current answer: No answer. Change answer">
                     <mat-icon>radio_button_unchecked</mat-icon>
                   </button>
                 } @else {
                 @switch (vote.value) {
                   @case (-1) {
-                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Change answer">
+                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Current answer: Disagree. Change answer" aria-label="Current answer: Disagree. Change answer">
                       <mat-icon style="color: red">cancel</mat-icon>
                     </button>
                   }
                   @case (0) {
-                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Change answer">
+                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Current answer: Neutral. Change answer" aria-label="Current answer: Neutral. Change answer">
                       <mat-icon>mode_standby</mat-icon>
                     </button>
                   }
                   @case (1) {
-                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Change answer">
+                    <button class="d-flex" mat-icon-button [matMenuTriggerFor]="voteMenu" matTooltip="Current answer: Agree. Change answer" aria-label="Current answer: Agree. Change answer">
                       <mat-icon style="color: green">check_circle</mat-icon>
                     </button>
                   }
                 }
                 }
                 <mat-menu #voteMenu="matMenu">
-                  <div class="d-flex flex-column align-items-start gap-2 m-2">
-                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id, 1)" (keydown.enter)="changeVote(statement.id, 1); $event.preventDefault()">
+                  <div class="d-flex flex-column align-items-start m-2">
+                    <button mat-menu-item (click)="changeVote(statement.id, 1)">
                       <mat-icon matTooltip="Agree" style="color: green">check_circle</mat-icon>
                       Agree
-                    </div>
-                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id, 0)" (keydown.enter)="changeVote(statement.id, 0); $event.preventDefault()">
+                    </button>
+                    <button mat-menu-item (click)="changeVote(statement.id, 0)">
                       <mat-icon matTooltip="Neutral">mode_standby</mat-icon>
                       Neutral
-                    </div>
-                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id, -1)" (keydown.enter)="changeVote(statement.id, -1); $event.preventDefault()">
+                    </button>
+                    <button mat-menu-item (click)="changeVote(statement.id, -1)">
                       <mat-icon matTooltip="Disagree" style="color: red">cancel</mat-icon>
                       Disagree
-                    </div>
-                    <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVote(statement.id, null)" (keydown.enter)="changeVote(statement.id, null); $event.preventDefault()">
+                    </button>
+                    <button mat-menu-item (click)="changeVote(statement.id, null)">
                       <mat-icon matTooltip="Skip">radio_button_unchecked</mat-icon>
                       Skip
-                    </div>
+                    </button>
                   </div>
                 </mat-menu>
               </div>
 
               <div class="d-flex flex-row gap-1 align-items-center">
                 <p class="mb-0 mobile">Weight:</p>
-                <button class="d-flex" mat-icon-button [matMenuTriggerFor]="weightMenu" matTooltip="Change weight">
+                <button class="d-flex" mat-icon-button [matMenuTriggerFor]="weightMenu" [matTooltip]="getWeight(statement.id) === 2 ? 'Current weight: Double. Change weight' : 'Current weight: Normal. Change weight'" [attr.aria-label]="getWeight(statement.id) === 2 ? 'Current weight: Double. Change weight' : 'Current weight: Normal. Change weight'">
                   <mat-icon>{{ getWeight(statement.id) === 2 ? 'speed_2x' : '1x_mobiledata' }}</mat-icon>
                 </button>
               </div>
               <mat-menu #weightMenu="matMenu">
-                <div class="d-flex flex-column align-items-start gap-2 m-2">
-                  <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVoteWeight(statement.id, 2)" (keydown.enter)="changeVoteWeight(statement.id, 2); $event.preventDefault()">
+                <div class="d-flex flex-column align-items-start m-2">
+                  <button mat-menu-item (click)="changeVoteWeight(statement.id, 2)">
                     <mat-icon matTooltip="Double weight">speed_2x</mat-icon>
                     Double weight
-                  </div>
-                  <div mat-menu-item class="d-flex flex-row gap-1 align-items-center small-zoom" (click)="changeVoteWeight(statement.id, 1)" (keydown.enter)="changeVoteWeight(statement.id, 1); $event.preventDefault()">
+                  </button>
+                  <button mat-menu-item (click)="changeVoteWeight(statement.id, 1)">
                     <mat-icon matTooltip="Normal weight">1x_mobiledata</mat-icon>
                     Normal weight
-                  </div>
+                  </button>
                 </div>
               </mat-menu>
             </div>

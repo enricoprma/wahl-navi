@@ -1,12 +1,11 @@
 @use '@angular/material' as mat;
 
 .bar
-  min-width: 80vw
-  max-width: 90vw
+  width: min(90vw, 70rem)
 .statement-container
   min-height: 40vh
-  max-width: 80vw
-  min-width: 80vw
+  width: min(90vw, 70rem)
+  min-width: 0
 
 .double-weight-button
   color: black
@@ -16,12 +15,10 @@
   .card
     max-width: 400px
   .bar
-    min-width: 80vw
-    max-width: 80vw
+    width: min(80vw, 70rem)
   .statement-container
     min-height: 40vh
-    max-width: 80vw
-    min-width: 80vw
+    width: min(80vw, 70rem)
 
 .accept-button 
   width: 100px
@@ -35,18 +32,27 @@
 .was-chosen
   border: 2px solid black !important
 
-.disabled-icon
-  color: grey
-  cursor: default
-  transform: unset
-
 .button-explanation
-  &:focus, &:focus-visible
-    outline: none
-    background-color: #e0e2ec
+  white-space: normal
     
 // Desktop
 @media (min-width: 800px)
     .voting
         align-items: center !important
         margin-top: 0 !important
+
+@media (max-width: 420px)
+  .voting
+    padding-inline: .5rem
+
+  .statement-container
+    min-height: 30vh
+
+  .statement-text
+    font-size: clamp(1.5rem, 8vw, 2rem)
+
+  .navigation-controls
+    gap: 2rem !important
+
+  .answer-controls
+    gap: .5rem !important

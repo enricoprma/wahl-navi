@@ -56,6 +56,11 @@ export class OverviewComponent implements OnInit {
   ): void {
     this.dialog.open(PartyPositionComponent, {
       data: { position, statement, party, vote: this.vote },
+      width: 'min(92vw, 42rem)',
+      maxWidth: '92vw',
+      ariaLabel: `${party.name} position`,
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
     });
   }
 }

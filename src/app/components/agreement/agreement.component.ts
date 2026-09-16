@@ -111,6 +111,11 @@ export class AgreementComponent implements OnInit, OnChanges, OnDestroy {
     party: Party,
   ): void {
     this.dialog.open(PartyPositionComponent, {
+      width: 'min(92vw, 42rem)',
+      maxWidth: '92vw',
+      autoFocus: 'first-tabbable',
+      ariaLabel: `${party.name} position`,
+      restoreFocus: true,
       data: {
         position,
         statement,

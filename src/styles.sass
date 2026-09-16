@@ -36,6 +36,11 @@ body
   font-family: 'Roboto', sans-serif
   background: var(--mat-sys-background)
   color: var(--mat-sys-on-background)
+  min-width: 0
+
+button:focus-visible, a:focus-visible, [tabindex]:focus-visible
+  outline: 3px solid var(--mat-sys-primary)
+  outline-offset: 3px
   
 // Material Symbols
 @font-face
@@ -107,6 +112,11 @@ p.big-icon
     font-size: 12px
 
 .dialog-body
-    max-height: calc(100vh - 210px)
-    overflow-y: auto
-    -webkit-overflow-scrolling: touch
+  max-height: calc(100dvh - 10rem)
+  overflow-y: auto
+  -webkit-overflow-scrolling: touch
+
+.dialog-content
+  max-height: calc(100dvh - 12rem)
+  overflow-y: auto
+  -webkit-overflow-scrolling: touch

@@ -36,7 +36,7 @@ describe('VotingComponent', () => {
 
   it('changes weight before answering without selecting Skip, and preserves it in the answer', async () => {
     await render();
-    const button = fixture.nativeElement.querySelector('[aria-label="Change answer weight"]') as HTMLButtonElement;
+    const button = fixture.nativeElement.querySelector('[aria-label="Normal weight. Change answer weight"]') as HTMLButtonElement;
     button.click();
     fixture.detectChanges();
     expect(component.doubleWeightEnabled()).toBeTrue();

@@ -59,7 +59,8 @@ export class StartComponent implements OnInit {
       this.dialog.open(RestartConfirmationComponent, {
         width: 'min(92vw, 26rem)',
         maxWidth: '92vw',
-        autoFocus: false,
+        autoFocus: 'first-tabbable',
+        restoreFocus: true,
       }).afterClosed().subscribe(confirmed => {
         if (confirmed) this.resetAndStart();
       });

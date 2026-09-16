@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
 import { HelpComponent } from './help.component';
 
@@ -8,7 +9,10 @@ describe('HelpComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HelpComponent]
+      imports: [HelpComponent],
+      providers: [
+        { provide: MatBottomSheetRef, useValue: { dismiss: jasmine.createSpy('dismiss') } },
+      ],
     })
     .compileComponents();
 

@@ -91,6 +91,11 @@ describe('EvaluationComponent', () => {
     tabs.selectedIndex = 1;
     render();
     expect(fixture.nativeElement.textContent).toContain('radio_button_unchecked');
+    const noAnswerButton = fixture.nativeElement.querySelector(
+      'button[aria-label="Current answer: No answer. Change answer"]',
+    );
+    expect(noAnswerButton).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('button[aria-label*="Skipped"]')).toBeNull();
 
     component.changeVoteWeight(42, 2);
     expect(component.getWeight(42)).toBe(2);

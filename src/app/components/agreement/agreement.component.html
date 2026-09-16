@@ -2,25 +2,25 @@
   <div class="d-flex flex-column" [class.gap-3]="expanded" [class.gap-2]="!expanded">
     <div class="d-flex flex-column">
       @if (animationEnded()) {
-        <div class="d-flex flex-row gap-1 align-items-center">
-          <div class="d-flex flex-row gap-3 align-items-center">
+        <div class="agreement-heading d-flex flex-row gap-1 align-items-center">
+          <div class="party-identity d-flex flex-row gap-3 align-items-center">
             <img width="48" [src]="getPartyLogoPath(agreement.party)" [alt]="agreement.party.name + ' logo'" />
-            <h4 class="mb-0 desktop">{{ agreement.party.name }}</h4>
-            <h4 class="mb-0 mobile">{{ agreement.party.name }}</h4>
+            <h4 class="party-name mb-0 desktop">{{ agreement.party.name }}</h4>
+            <h4 class="party-name mb-0 mobile">{{ agreement.party.shortName }}</h4>
           </div>
-          <button mat-icon-button aria-label="Toggle party details" (click)="toggleExpanded()">
+          <button mat-icon-button [attr.aria-label]="(expanded ? 'Collapse' : 'Expand') + ' details for ' + agreement.party.name" [attr.aria-expanded]="expanded" [attr.aria-controls]="'party-details-' + agreement.party.id" (click)="toggleExpanded()">
             <mat-icon>{{ !expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon>
           </button>
         </div>
       }
-      <section class="d-flex flex-row align-items-center justify-content-center gap-5">
+      <section class="agreement-progress">
         <mat-progress-bar mode="determinate" [value]="displayPercent()"></mat-progress-bar>
-        <h2>{{ displayPercent().toFixed(1) }}%</h2>
+        <h2 class="agreement-percentage">{{ displayPercent().toFixed(1) }}%</h2>
       </section>
     </div>
 
     @if (expanded) {
-      <div>
+      <div [id]="'party-details-' + agreement.party.id">
         @if (agreement.party.description) {
           <h4 class="mb-3">{{ agreement.party.description }}</h4>
         }

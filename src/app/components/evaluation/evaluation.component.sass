@@ -10,6 +10,10 @@ mat-card
 .evaluation
   margin-right: 1.5rem
   margin-left: 1.5rem
+  min-width: 0
+
+.statement h4, .dashboard-card
+  overflow-wrap: anywhere
 
 @media (min-width: 800px)
   .dashboard-card
@@ -31,3 +35,11 @@ mat-card
   position: absolute;
   top: 5px;
   right: 10px;
+
+@media (max-width: 799px)
+  .evaluation
+    margin-right: .75rem
+    margin-left: .75rem
+
+  .dashboard-card-content
+    gap: 2rem !important
