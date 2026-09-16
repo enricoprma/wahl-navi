@@ -4,9 +4,13 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "data:export": "node scripts/run-importer.mjs",
+    "data:check": "node scripts/run-importer.mjs --check",
+    "build:angular": "ng build --configuration production",
+    "build": "node scripts/build-demo.mjs",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test --watch=false --browsers=ChromeHeadless",
+    "check": "npm run data:check && npm test && npm run build"
   },
   "private": true,
   "dependencies": {
@@ -19,7 +23,6 @@
     "@angular/platform-browser": "^19.2.0",
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
-    "@angular/service-worker": "^19.2.0",
     "bootstrap": "^5.3.6",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
