@@ -1,162 +1,168 @@
 # Wahl-Navi
 
-Wahl-Navi is a data-driven Angular election-orientation app that compares user
-responses with party positions maintained in Excel and exported to YAML.
+Wahl-Navi is an Angular election-orientation app that compares your answers with party positions. Originally developed for a real municipal election, this portfolio edition demonstrates the application with a fictional dataset and can be adapted using an Excel workbook and party logos.
 
-This portfolio edition uses entirely fictional parties, statements, positions,
-and original placeholder logos. The included dataset describes the fictional
-Exampleton City Council Election 2026.
+> **Fictional demo:** All parties, statements, positions, justifications, logos, and election metadata in the bundled Exampleton dataset are made up. This edition does not provide voting advice.
 
-## Development
+<p align="start">
+  <img src="assets/screenshots/results.png" width="900" alt="Wahl-Navi Exampleton results view">
+</p>
 
-Requirements:
+## Contents
 
-- Node.js and npm
-- Python 3.10 or newer for the data importer
+- [What it does](#what-it-does)
+- [Production background and credits](#production-background-and-credits)
+- [My contribution](#my-contribution)
+- [Quick start](#quick-start)
+- [Creating your own election](#creating-your-own-election)
+- [Agreement calculation](#agreement-calculation)
+- [Architecture](#architecture)
+- [Quality checks](#quality-checks)
+- [Scope](#scope)
+- [License](#license)
 
-Install dependencies and start the Angular development server:
+## What it does
+
+Users answer statements with **Agree**, **Neutral**, **Disagree**, or **Skip**, and can give selected statements double weight. Results rank parties by agreement and let users inspect the positions behind each score.
+
+- Navigate back and forth and resume progress saved in the browser.
+- Edit answers and weights from the results view.
+- Read party justifications and compare all positions side by side.
+- Use responsive layouts and keyboard-accessible controls.
+- Configure election content through a validated Excel-to-YAML pipeline.
+
+<p align="start">
+  <img src="assets/screenshots/flow.gif" width="900" alt="Wahl-Navi questionnaire and results flow">
+</p>
+
+The restrained interface is intentional: parties share the same layouts, controls, and result styling. Party-specific colors are largely confined to identifying assets such as logos.
+
+<p align="start">
+  <img src="assets/screenshots/questionnaire.png" width="900" alt="Wahl-Navi questionnaire view">
+</p>
+
+<p align="start">
+  <img src="assets/screenshots/questionnaire-mobile.png" width="220" alt="Questionnaire on mobile">
+  &nbsp;
+  <img src="assets/screenshots/results-mobile.png" width="220" alt="Results on mobile">
+  &nbsp;
+  <img src="assets/screenshots/adjust-mobile.png" width="220" alt="Answer editing on mobile">
+</p>
+
+## Production background and credits
+
+Wahl-Navi originated in the **2025 Bottrop municipal-election project**, a cooperation between **Zukunft Bottrop** and **Hochschule Ruhr West**. The application was also reused by **WAZ Essen** with a separate local dataset.
+
+The wider project included an editorial process aimed at developing and reviewing politically neutral statements.
+
+This portfolio edition replaces real election content and assets with Exampleton. The refactor also adds dataset configuration, stricter workbook and logo validation, safer persistence and result flows, and automated quality checks.
+
+- [Original Bottrop deployment](https://www.zukunft-bottrop.de/wp-content/wahlnavi/)
+- [Project background](https://www.zukunft-bottrop.de/wahl-navi/)
+- [HRW report: technical credits and Essen reuse](https://www.hochschule-ruhr-west.de/news/news_2025/wahl-navi-bottrop-als-orientierungshilfe-fuer-die-kommunalwahl-gestartet)
+
+The historical deployments used an earlier version and real election data. This repository is the later portfolio edition, not an archival copy of those deployments.
+
+## My contribution
+
+My work covered the end-to-end application implementation and the portfolio refactor. It included the Angular interface, questionnaire and matching logic, browser persistence, Excel-to-YAML data pipeline, tests, and build configuration.
+
+## Quick start
+
+Use **Node.js 22 with npm** and **Python 3.10 or newer**. CI uses Node 22 and Python 3.10.
+
+From the repository root:
 
 ```bash
-npm install
+npm ci
+
+# macOS / Linux
+python3 -m pip install -r requirements-dev.txt
+
+# Windows
+py -3 -m pip install -r requirements-dev.txt
+
 npm start
 ```
 
-The application is then available at `http://localhost:4200/`.
+Open [localhost:4200](http://localhost:4200/). The fictional Exampleton dataset is already configured; `npm start` validates and exports it before starting Angular.
 
-Install the importer and test dependencies when working with election data:
+<p align="start">
+  <img src="assets/screenshots/start.png" width="900" alt="Wahl-Navi Exampleton start screen">
+</p>
 
-```bash
-python -m pip install -r requirements-dev.txt
-```
+Use `python3` if that is your Python command, or `py -3` on Windows. Install dependencies into the interpreter selected by the npm helper: it tries `python3` first on macOS/Linux and `py -3` first on Windows, and prints the interpreter it uses.
 
-On Windows, `py -3` can be used instead of `python` when only the Python
-launcher is available.
+## Creating your own election
 
-## Production build
+Each build uses one dataset: an Excel workbook and one SVG logo per party. To adapt the app:
+
+1. Copy `data/exampleton/` into a new dataset directory.
+2. Replace the workbook content and logos.
+3. Set the `workbook` and `logos` paths in `wahl-navi.config.json`.
+4. Run `npm run data:check`, then `npm start` to preview.
+
+The [election setup guide](docs/creating-an-election.md) covers the workbook schema, required fields, logo naming, dataset IDs, validation, and deployment.
+
+For a production build:
 
 ```bash
 npm run build
 ```
 
-Build output is written to `dist/wahl-navi/`.
+Deploy `dist/wahl-navi/browser/` to a static host. The build exports the configured dataset automatically. See the guide for [deployment under a subpath](docs/creating-an-election.md#8-create-a-production-build).
 
-The build first validates and exports `data/example-election.xlsx`; Angular is
-not started when the import fails, and the failing exit code is returned. The
-workflow discovers Python 3 using `py -3`, `python`, or `python3`, so it works
-with the normal Windows launcher as well as common macOS and Linux setups.
+## Agreement calculation
 
-To publish below a path such as `https://example.org/wahl-navi/`, provide a
-trailing-slash base href:
-
-```bash
-npm run build -- --base-href /wahl-navi/
-```
-
-Wahl-Navi uses hash routing, so static hosts do not need rewrite rules for
-`#/vote` and `#/results`. Deploy the complete contents of
-`dist/wahl-navi/browser/` to the selected document root or subpath.
-
-## Data pipeline
-
-The committed example workbook at `data/example-election.xlsx` is the source
-of truth for the fictional Exampleton dataset. The importer validates that
-workbook and generates the files consumed by the Angular application:
+For each party:
 
 ```text
-data/example-election.xlsx
-        |
-        v
-tools/export_xlsx_to_yaml.py
-        |
-        v
-public/data/*.yaml
+agreement = round(100 × matching answer weights / all answered weights)
 ```
 
-The generated files are:
+- Only identical positions match. Neutral matches neutral, with no partial credit against agree or disagree.
+- An answer has weight 1, or weight 2 when double-weighted. Its weight counts in the denominator and, if it matches, the numerator.
+- Skipped and unanswered statements are excluded. With no non-skipped answers, every party receives 0%.
+- Results are rounded to whole percentages and sorted descending; ties retain workbook party order.
 
-- `metadata.yaml`
-- `statements.yaml`
-- `positions.yaml`
-- `parties.yaml`
+For example, a matching answer with weight 2 and a nonmatching answer with weight 1 produce `round(100 × 2 / 3) = 67%`.
 
-Edit the workbook and regenerate these files rather than editing generated YAML
-by hand.
+## Architecture
 
-### Workbook format
+The Python importer validates the configured workbook and logos, then generates YAML and copies party SVGs into `public/`. Angular loads these assets at runtime.
 
-The workbook uses four required sheets with exact, case-sensitive names and
-column headers:
+&nbsp;
+<p align="start">
+  <img src="assets/architecture.svg" width="900" alt="Wahl-Navi architecture diagram">
+</p>
+&nbsp;
 
-| Sheet | Required columns |
-| --- | --- |
-| `Metadata` | `key`, `value` |
-| `Statements` | `id`, `text`, `explanation`, `keywords` |
-| `Positions` | `statement_id`, `party_id`, `opinion`, `justification` |
-| `Parties` | `id`, `name`, `short_name`, `color`, `description` |
+| Component             | Responsibility                                                              |
+| --------------------- | --------------------------------------------------------------------------- |
+| `ElectionDataService` | Load and cache the generated YAML.                                          |
+| `PartyService`        | Provide party and position lookups by stable IDs and construct party logo paths.                           |
+| `VotingStateService`  | Manage answers, weights, progress, and validated local persistence.         |
+| `EvaluationComponent` | Gather data and pass votes, parties, and positions to the matching service. |
+| `MatchingService`     | Calculate agreement from supplied arrays independently of data loading.     |
 
-`Metadata` must define `datasetId`, `appTitle`, `location`, `electionTitle`,
-and `disclaimer`. Party IDs use lowercase letters, numbers, and single hyphens.
-Party colors use six-digit hex values. Position opinions must be `agree`,
-`neutral`, or `disagree`.
+Voting progress stays in the browser; no voting state is sent to a backend. The [developer guide](docs/development.md) explains persistence schemas, importer behavior, repository structure, and test coverage.
 
-`explanation` and `justification` are optional. Blank cells become YAML `null`
-values and never `.nan`. All other text fields are required.
+**Stack:** Angular 19, TypeScript, Angular Material, Bootstrap, Sass, and RxJS; Python with pandas, openpyxl, and PyYAML.
 
-Party relationships and logo filenames use stable party IDs. Statement
-relationships use stable numeric statement IDs. Election copy belongs in
-`metadata.yaml`; Angular environments contain build settings only.
-
-### Validate and export
-
-Validate the example workbook without changing generated files:
+## Quality checks
 
 ```bash
-python tools/export_xlsx_to_yaml.py data/example-election.xlsx --check
+npm run check
 ```
 
-Generate YAML in the default repository location, `public/data/`:
+This runs importer tests, dataset validation, formatting checks, ESLint, headless Angular tests, and a production build. GitHub Actions runs the same core checks.
 
-```bash
-python tools/export_xlsx_to_yaml.py data/example-election.xlsx
-```
+Tests require Google Chrome or a compatible Chromium executable. See the [browser setup instructions](docs/development.md#testing-and-ci) for `CHROME_BIN` and the [command reference](docs/development.md#npm-workflows) for individual checks.
 
-Use `--verbose` to show the workbook path, dataset ID, validated record counts,
-optional blanks, converted links, and operating mode. Use `--output
-<directory>` to write to a different location. The default output path is
-resolved from the repository, so it does not depend on the current working
-directory.
+## Scope
 
-The importer rejects missing sheets or columns, duplicate IDs, unknown
-references, invalid opinions or colors, duplicate positions, incomplete
-party-position matrices, and empty required text fields. Errors identify the
-sheet and row where possible. Validation failures return a non-zero exit code.
-
-Markdown links in the form `[label](https://example.com)` are converted to safe
-anchors. Only HTTP and HTTPS URLs are linked, normal text is escaped, and raw
-spreadsheet HTML is not trusted.
-
-Output ordering and formatting are deterministic: exporting an unchanged
-workbook produces unchanged YAML.
-
-### Importer tests
-
-Run the importer test suite from the repository root:
-
-```bash
-python -m pytest tools/tests
-```
-
-The tests create temporary workbooks and cover successful export, missing-value
-normalization, safe link conversion, check mode, and each supported validation
-failure. They do not overwrite `public/data/`.
-
-## Routes
-
-The app uses hash-based routing for static hosting:
-
-- `#/vote`
-- `#/results`
+Wahl-Navi supports one election dataset per build, local browser persistence, and static hosting with hash routing. It has no backend, accounts, cloud persistence, runtime election switching, graphical election builder, or service worker/PWA runtime.
 
 ## License
 
-See [LICENSE](LICENSE).
+Licensed under the [MIT License](LICENSE).
