@@ -78,7 +78,7 @@ The Python importer:
 - produces deterministic YAML
 - checks that each required logo exists, has the exact filename, and contains nonempty readable data
 - copies the files without validating SVG markup
-- copies validated logos to the runtime asset directory
+- copies accepted logo files to the runtime asset directory
 
 Generated YAML should never contain spreadsheet `.nan` values.
 

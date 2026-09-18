@@ -4,7 +4,7 @@ Wahl-Navi is an Angular election-orientation app that compares your answers with
 
 > **Fictional demo:** All parties, statements, positions, justifications, logos, and election metadata in the bundled Exampleton dataset are made up. This edition does not provide voting advice.
 
-<p align="start">
+<p>
   <img src="assets/screenshots/results.png" width="900" alt="Wahl-Navi Exampleton results view">
 </p>
 
@@ -31,17 +31,17 @@ Users answer statements with **Agree**, **Neutral**, **Disagree**, or **Skip**, 
 - Use responsive layouts and keyboard-accessible controls.
 - Configure election content through a validated Excel-to-YAML pipeline.
 
-<p align="start">
+<p>
   <img src="assets/screenshots/flow.gif" width="900" alt="Wahl-Navi questionnaire and results flow">
 </p>
 
 The restrained interface is intentional: parties share the same layouts, controls, and result styling. Party-specific colors are largely confined to identifying assets such as logos.
 
-<p align="start">
+<p>
   <img src="assets/screenshots/questionnaire.png" width="900" alt="Wahl-Navi questionnaire view">
 </p>
 
-<p align="start">
+<p>
   <img src="assets/screenshots/questionnaire-mobile.png" width="220" alt="Questionnaire on mobile">
   &nbsp;
   <img src="assets/screenshots/results-mobile.png" width="220" alt="Results on mobile">
@@ -87,7 +87,7 @@ npm start
 
 Open [localhost:4200](http://localhost:4200/). The fictional Exampleton dataset is already configured; `npm start` validates and exports it before starting Angular.
 
-<p align="start">
+<p>
   <img src="assets/screenshots/start.png" width="900" alt="Wahl-Navi Exampleton start screen">
 </p>
 
@@ -122,7 +122,7 @@ agreement = round(100 × matching answer weights / all answered weights)
 
 - Only identical positions match. Neutral matches neutral, with no partial credit against agree or disagree.
 - An answer has weight 1, or weight 2 when double-weighted. Its weight counts in the denominator and, if it matches, the numerator.
-- Skipped and unanswered statements are excluded. With no non-skipped answers, every party receives 0%.
+- Skipped and unanswered statements are excluded. With all answers skipped, every party receives 0%.
 - Results are rounded to whole percentages and sorted descending; ties retain workbook party order.
 
 For example, a matching answer with weight 2 and a nonmatching answer with weight 1 produce `round(100 × 2 / 3) = 67%`.
@@ -132,7 +132,7 @@ For example, a matching answer with weight 2 and a nonmatching answer with weigh
 The Python importer validates the configured workbook and logos, then generates YAML and copies party SVGs into `public/`. Angular loads these assets at runtime.
 
 &nbsp;
-<p align="start">
+<p>
   <img src="assets/architecture.svg" width="900" alt="Wahl-Navi architecture diagram">
 </p>
 &nbsp;
