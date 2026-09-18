@@ -3,7 +3,7 @@ const { join } = require("node:path");
 module.exports = (config) => {
   config.set({
     basePath: "",
-    frameworks: ['jasmine'],
+    frameworks: ["jasmine"],
     plugins: [
       require("karma-jasmine"),
       require("karma-chrome-launcher"),
