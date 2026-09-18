@@ -8,6 +8,8 @@ Wahl-Navi is an Angular election-orientation app that compares your answers with
   <img src="assets/screenshots/results.png" width="900" alt="Wahl-Navi Exampleton results view">
 </p>
 
+[**Live Demo**](https://enricoprma.github.io/wahl-navi) · [Creating an election](docs/creating-an-election.md) · [Developer guide](docs/development.md)
+
 ## Contents
 
 - [What it does](#what-it-does)
@@ -137,17 +139,17 @@ The Python importer validates the configured workbook and logos, then generates 
 </p>
 &nbsp;
 
-| Component             | Responsibility                                                              |
-| --------------------- | --------------------------------------------------------------------------- |
-| `ElectionDataService` | Load and cache the generated YAML.                                          |
-| `PartyService`        | Provide party and position lookups by stable IDs and construct party logo paths.                           |
-| `VotingStateService`  | Manage answers, weights, progress, and validated local persistence.         |
-| `EvaluationComponent` | Gather data and pass votes, parties, and positions to the matching service. |
-| `MatchingService`     | Calculate agreement from supplied arrays independently of data loading.     |
+| Component             | Responsibility                                                                   |
+| --------------------- | -------------------------------------------------------------------------------- |
+| `ElectionDataService` | Load and cache the generated YAML.                                               |
+| `PartyService`        | Provide party and position lookups by stable IDs and construct party logo paths. |
+| `VotingStateService`  | Manage answers, weights, progress, and validated local persistence.              |
+| `EvaluationComponent` | Gather data and pass votes, parties, and positions to the matching service.      |
+| `MatchingService`     | Calculate agreement from supplied arrays independently of data loading.          |
 
 Voting progress stays in the browser; no voting state is sent to a backend. The [developer guide](docs/development.md) explains persistence schemas, importer behavior, repository structure, and test coverage.
 
-**Stack:** Angular 19, TypeScript, Angular Material, Bootstrap, Sass, and RxJS; Python with pandas, openpyxl, and PyYAML.
+**Stack:** Angular 20, TypeScript, Angular Material, Bootstrap, Sass, and RxJS; Python with pandas, openpyxl, and PyYAML.
 
 ## Quality checks
 

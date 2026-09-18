@@ -178,7 +178,7 @@ npm test
 
 ## Tech stack
 
-- Angular 19
+- Angular 20
 - Angular Material
 - Bootstrap
 - Sass
